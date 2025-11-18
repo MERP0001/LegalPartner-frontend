@@ -1,28 +1,17 @@
+"use client";
 import { Button } from '@/components/common/Button';
 import { FileText, Shield, Zap } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
 
 export default function Home() {
+  const auth = useAuthStore();
   return (
-    <div className='min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50'>
-      {/* Header */}
-      <header className='border-b bg-white/80 backdrop-blur-md'>
-        <div className='container mx-auto px-4 py-4'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center space-x-2'>
-              <Shield className='h-8 w-8 text-primary-600' />
-              <h1 className='text-2xl font-bold text-gray-900'>LegalPartner</h1>
-            </div>
-            <nav className='hidden md:flex items-center space-x-4'>
-              <Button variant='ghost'>Iniciar Sesión</Button>
-              <Button>Registrarse</Button>
-            </nav>
-          </div>
-        </div>
-      </header>
+    <div className='min-h-screen bg-gradient-to-br from-primary-50 to-danger-50'>
 
       {/* Hero Section */}
       <main className='container mx-auto px-4 py-16'>
-        <div className='text-center max-w-4xl mx-auto'>
+        <div className='text-center max-w-4xl mx-auto card-premium'>
+          <div className='card-premium-inner'>
           <h2 className='text-5xl font-bold text-gray-900 mb-6'>
             Análisis Inteligente de{' '}
             <span className='text-primary-600'>Contratos Legales</span>
@@ -32,69 +21,60 @@ export default function Home() {
             identificar riesgos y obtener recomendaciones legales en minutos.
           </p>
           <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-            <Button size='lg' className='text-lg px-8 py-3'>
-              Comenzar Análisis
+            <Button
+              size='lg'
+              className='text-lg px-8 py-3 shadow-sm'
+              onClick={() => {
+                if (auth.isAuthenticated) window.location.href = '/upload';
+                else window.location.href = '/auth/login';
+              }}
+            >
+              {auth.isAuthenticated ? 'Comenzar Análisis' : 'Inicia sesión para comenzar análisis'}
             </Button>
-            <Button variant='outline' size='lg' className='text-lg px-8 py-3'>
-              Ver Demo
-            </Button>
+          </div>
           </div>
         </div>
 
         {/* Features */}
         <div className='mt-24 grid md:grid-cols-3 gap-8'>
-          <div className='text-center p-6 rounded-lg bg-white shadow-sm'>
-            <div className='w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-              <FileText className='h-8 w-8 text-primary-600' />
+          <div className='card-premium'>
+            <div className='card-premium-inner text-center p-6'>
+              <div className='w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                <FileText className='h-8 w-8 text-primary-600' />
+              </div>
+              <h3 className='text-xl font-semibold mb-2'>Upload Rápido</h3>
+              <p className='text-gray-600'>
+                Sube documentos PDF y procésalos automáticamente con OCR avanzado
+              </p>
             </div>
-            <h3 className='text-xl font-semibold mb-2'>Upload Rápido</h3>
-            <p className='text-gray-600'>
-              Sube documentos PDF y procésalos automáticamente con OCR avanzado
-            </p>
           </div>
           
-          <div className='text-center p-6 rounded-lg bg-white shadow-sm'>
-            <div className='w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-              <Zap className='h-8 w-8 text-secondary-600' />
+          <div className='card-premium'>
+            <div className='card-premium-inner text-center p-6'>
+              <div className='w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                <Zap className='h-8 w-8 text-primary-600' />
+              </div>
+              <h3 className='text-xl font-semibold mb-2'>Análisis IA</h3>
+              <p className='text-gray-600'>
+                Análisis profundo de cláusulas con métricas de riesgo y favorabilidad
+              </p>
             </div>
-            <h3 className='text-xl font-semibold mb-2'>Análisis IA</h3>
-            <p className='text-gray-600'>
-              Análisis profundo de cláusulas con métricas de riesgo y favorabilidad
-            </p>
           </div>
           
-          <div className='text-center p-6 rounded-lg bg-white shadow-sm'>
-            <div className='w-16 h-16 bg-warning-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-              <Shield className='h-8 w-8 text-warning-600' />
+          <div className='card-premium'>
+            <div className='card-premium-inner text-center p-6'>
+              <div className='w-16 h-16 bg-warning-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                <Shield className='h-8 w-8 text-warning-600' />
+              </div>
+              <h3 className='text-xl font-semibold mb-2'>Recomendaciones</h3>
+              <p className='text-gray-600'>
+                Recibe recomendaciones específicas y referencias legales precisas
+              </p>
             </div>
-            <h3 className='text-xl font-semibold mb-2'>Recomendaciones</h3>
-            <p className='text-gray-600'>
-              Recibe recomendaciones específicas y referencias legales precisas
-            </p>
           </div>
         </div>
 
-        {/* Stats */}
-        <div className='mt-16 bg-white rounded-lg shadow-sm p-8'>
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-8 text-center'>
-            <div>
-              <div className='text-3xl font-bold text-primary-600'>1,200+</div>
-              <div className='text-gray-600'>Contratos Analizados</div>
-            </div>
-            <div>
-              <div className='text-3xl font-bold text-secondary-600'>95%</div>
-              <div className='text-gray-600'>Precisión OCR</div>
-            </div>
-            <div>
-              <div className='text-3xl font-bold text-warning-600'>3 min</div>
-              <div className='text-gray-600'>Tiempo Promedio</div>
-            </div>
-            <div>
-              <div className='text-3xl font-bold text-danger-600'>500+</div>
-              <div className='text-gray-600'>Usuarios Activos</div>
-            </div>
-          </div>
-        </div>
+        {/* Stats eliminadas por ahora para evitar datos no reales */}
       </main>
 
       {/* Footer */}

@@ -8,18 +8,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary - Azul profesional
+        // Primary - Azul ultramarino (Bandera Dominicana)
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb', // Principal
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#E6EEF7',
+          100: '#C9DBED',
+          200: '#A9C0DA',
+          300: '#8AA6C8',
+          400: '#6A8CC0',
+          500: '#335997',
+          600: '#002D62', // Principal (Ultramarino)
+          700: '#002552',
+          800: '#001F45',
+          900: '#001736',
         },
         // Secondary - Verde éxito
         secondary: {

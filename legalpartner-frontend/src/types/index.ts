@@ -5,16 +5,19 @@ export interface Document {
   original_filename: string;
   file_path: string;
   file_size: number;
+  file_size_formatted?: string;
   mime_type: string;
   file_hash: string;
   document_status: DocumentStatus;
+  status_display?: string;
   contract_type?: ContractType;
+  contract_type_display?: string;
   extracted_text: string;
   ocr_confidence?: number;
   page_count?: number;
   upload_date: string;
   processed_date?: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export type DocumentStatus = 'uploaded' | 'processing' | 'processed' | 'failed';
@@ -24,7 +27,7 @@ export type ContractType = 'rent' | 'mortgage' | 'services' | 'employment' | 'tr
 export interface ContractAnalysis {
   analysis_id: string;
   user: string;
-  document: string;
+  document: string | Document;
   analysis_state: AnalysisState;
   contract_type?: ContractType;
   analysis_summary: string;
@@ -37,9 +40,17 @@ export interface ContractAnalysis {
   created_at: string;
   updated_at: string;
   completed_at?: string;
-  analysis_options: Record<string, any>;
-  ai_model_info: Record<string, any>;
+  analysis_options: Record<string, unknown>;
+  ai_model_info: Record<string, unknown>;
   clauses?: ContractClause[];
+  document_filename?: string;
+  document_id?: string;
+  is_completed?: boolean;
+  is_processing?: boolean;
+  is_failed?: boolean;
+  high_risk_clauses_count?: number;
+  average_favorability?: number;
+  completion_percentage?: number;
 }
 
 export type AnalysisState = 'queued' | 'processing' | 'processed' | 'failed';
@@ -57,6 +68,8 @@ export interface ContractClause {
   embedding?: number[];
   created_at: string;
   analysis?: ClauseAnalysis;
+  text_preview?: string;
+  has_analysis?: boolean;
 }
 
 export interface ClauseAnalysis {
@@ -134,6 +147,20 @@ export interface PaginatedResponse<T> {
   };
 }
 
+export interface DocumentStats {
+  total_documents: number;
+  documents_by_status: Record<string, number>;
+  storage_usage: Record<string, unknown>;
+  monthly_usage: Record<string, unknown>;
+  recent_uploads: Document[];
+  processing_summary: {
+    processed_count: number;
+    processing_rate: number;
+    avg_ocr_confidence: number;
+    total_pages: number;
+  };
+}
+
 // Form Types
 export interface LoginFormData {
   email: string;
@@ -176,4 +203,44 @@ export interface AnalysisFilters {
   search?: string;
   page?: number;
   page_size?: number;
+}
+
+// Chatbot Types
+export interface ConsultationSource {
+  type: string;
+  article_reference?: string;
+  relevance_score?: number;
+  excerpt?: string;
+}
+
+export interface ConsultationResponseData {
+  consultation_id: string;
+  question: string;
+  response: string;
+  confidence_score: number;
+  response_time_seconds: number;
+  sources: ConsultationSource[];
+  related_questions: string[];
+  created_at: string;
+}
+
+export interface Consultation {
+  agent_chat_id: string;
+  topic: string;
+  created_by_email: string;
+  created_at: string;
+  updated_at: string;
+  last_activity?: string | null;
+  is_active: boolean;
+  message_count: number;
+  duration_minutes: number;
+  is_recent: boolean;
+  metadata: Record<string, unknown>;
+}
+
+export interface ConsultationFeedback {
+  satisfaction_rating: number;
+  is_helpful: boolean;
+  comments?: string;
+  suggested_improvement?: string;
 }

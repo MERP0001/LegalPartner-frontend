@@ -9,7 +9,8 @@
   
   body {
     font-family: inherit;
-    background-color: white;
+    background-image: radial-gradient(1200px 600px at 0% 0%, #E6EEF7 0%, #ffffff 65%), linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    background-attachment: fixed;
     color: #1f2937;
   }
 }
@@ -17,6 +18,18 @@
 @layer components {
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .card-premium {
+    @apply relative rounded-2xl p-[1px] bg-gradient-to-br from-primary-200 via-secondary-200 to-primary-400 shadow-lg;
+  }
+  .card-premium-inner {
+    @apply rounded-2xl bg-white/90 backdrop-blur-sm ring-1 ring-gray-100/60 p-5 shadow-md;
+  }
+  .panel {
+    @apply rounded-2xl bg-white/90 shadow-md ring-1 ring-gray-100/60;
+  }
+  .badge-soft {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs ring-1 ring-gray-300/50;
   }
 }
 
