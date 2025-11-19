@@ -45,15 +45,30 @@ export interface ContractAnalysis {
   clauses?: ContractClause[];
   document_filename?: string;
   document_id?: string;
+  document_name?: string;
   is_completed?: boolean;
   is_processing?: boolean;
   is_failed?: boolean;
   high_risk_clauses_count?: number;
   average_favorability?: number;
   completion_percentage?: number;
+  // Campos de polling
+  progress_percentage?: number;
+  current_step?: string;
+  estimated_time_remaining?: number;
+  error_message?: string;
+  // Permisos de usuario
+  user_permissions?: UserAnalysisPermissions;
 }
 
-export type AnalysisState = 'queued' | 'processing' | 'processed' | 'failed';
+export interface UserAnalysisPermissions {
+  can_export: boolean;
+  can_view_precedents: boolean;
+  can_retry_analysis: boolean;
+  remaining_analyses_this_month: number;
+}
+
+export type AnalysisState = 'queued' | 'processing' | 'processed' | 'completed' | 'failed';
 export type FavorabilityLevel = 'very_unfavorable' | 'unfavorable' | 'neutral' | 'favorable' | 'very_favorable';
 
 export interface ContractClause {
@@ -79,18 +94,28 @@ export interface ClauseAnalysis {
   outcome: string;
   favorability_rate: number;
   favorability_level: FavorabilityLevel;
+  is_high_risk: boolean;
   risk_factors: string[];
   recommendations: string[];
-  legal_precedents: string[];
+  legal_precedents: LegalPrecedent[];
   confidence_score: number;
   related_articles: LegalArticleReference[];
   created_at: string;
 }
 
 export interface LegalArticleReference {
+  article_id?: string;
   law_name: string;
   article_reference: string;
-  similarity_score: number;
+  relevance: string;
+  similarity_score?: number;
+  excerpt?: string;
+  content?: string;
+}
+
+export interface LegalPrecedent {
+  case: string;
+  relevance: string;
   excerpt?: string;
 }
 
@@ -139,12 +164,34 @@ export interface ApiResponse<T> {
 
 export interface PaginatedResponse<T> {
   success: boolean;
-  data: {
-    results: T[];
-    count: number;
-    next: string | null;
-    previous: string | null;
+  data: T[];
+  pagination?: {
+    page: number;
+    page_size: number;
+    total_pages: number;
+    total_count: number;
+    has_next: boolean;
+    has_previous: boolean;
+    next_page: number | null;
+    previous_page: number | null;
   };
+  message?: string;
+}
+
+export interface AnalysisListResponse {
+  success: boolean;
+  data: ContractAnalysis[];
+  pagination?: {
+    page: number;
+    page_size: number;
+    total_pages: number;
+    total_count: number;
+    has_next: boolean;
+    has_previous: boolean;
+    next_page: number | null;
+    previous_page: number | null;
+  };
+  message?: string;
 }
 
 export interface DocumentStats {

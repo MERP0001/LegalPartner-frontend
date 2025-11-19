@@ -1,14 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getDocument, getDocumentDownloadUrl, startAnalysis } from "@/lib/api";
-import type { Document } from "@/types";
+import { getDocument, getDocumentDownloadUrl, startAnalysis, getLatestDocumentAnalysis } from "@/lib/api";
+import type { Document, ContractAnalysis } from "@/types";
 import { Button } from "@/components/common/Button";
 
 export default function ContractDetailPage() {
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
   const [doc, setDoc] = useState<Document | null>(null);
+  const [analysis, setAnalysis] = useState<ContractAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
@@ -17,10 +18,19 @@ export default function ContractDetailPage() {
     const load = async () => {
       try {
         const res = await getDocument(id);
-        if (res.success) setDoc(res.data);
-        else setError(res.message || "No se pudo cargar el documento");
+        if (res.success && res.data) {
+          setDoc(res.data);
+          
+          // Buscar el análisis más reciente del documento usando el endpoint específico
+          const analysisRes = await getLatestDocumentAnalysis(id);
+          if (analysisRes.success && analysisRes.data) {
+            setAnalysis(analysisRes.data);
+          }
+        } else {
+          setError(res.message || 'Error al cargar documento');
+        }
       } catch {
-        setError("Error al cargar documento");
+        setError('Error al cargar documento');
       } finally {
         setLoading(false);
       }
@@ -44,6 +54,8 @@ export default function ContractDetailPage() {
   if (!doc) return <div className="p-6">Documento no encontrado</div>;
 
   const downloadUrl = getDocumentDownloadUrl(doc.document_id);
+  const isAnalyzed = analysis !== null;
+  const analysisStatus = analysis?.analysis_state;
 
   return (
     <div className="min-h-screen">
@@ -72,9 +84,51 @@ export default function ContractDetailPage() {
               <div className="font-medium">{doc.page_count ?? '-'}</div>
             </div>
           </div>
+          
+          {/* Texto Extraído */}
+          {doc.extracted_text && (
+            <div className="p-4 bg-white/90 ring-1 ring-gray-100/60 rounded border-2" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+              <div className="mb-2 text-sm font-medium text-gray-700">Contenido del Documento</div>
+              <div className="max-h-96 overflow-y-auto p-3 bg-gray-50 rounded text-sm text-gray-800 whitespace-pre-wrap">
+                {doc.extracted_text}
+              </div>
+            </div>
+          )}
+          
+          {/* Estado del Análisis */}
+          {isAnalyzed && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-blue-900">Estado del Análisis</div>
+                  <div className="text-sm text-blue-700">
+                    {analysisStatus === 'completed' || analysisStatus === 'processed' ? 'Completado' :
+                     analysisStatus === 'processing' ? 'Procesando...' :
+                     analysisStatus === 'queued' ? 'En cola' :
+                     analysisStatus === 'failed' ? 'Fallido' : analysisStatus}
+                  </div>
+                </div>
+                {(analysisStatus === 'completed' || analysisStatus === 'processed') && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => window.location.href = `/analysis/${analysis.analysis_id}`}
+                  >
+                    Ver Análisis
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+          
           {actionMsg && <div className={`text-sm ${actionMsg.includes('iniciado') ? 'text-secondary-700' : 'text-danger-600'}`}>{actionMsg}</div>}
           <div className="flex gap-3">
-            <Button className="bg-primary-600 hover:bg-primary-700 text-white" onClick={onAnalyze}>Analizar</Button>
+            <Button 
+              className="bg-primary-600 hover:bg-primary-700 text-white" 
+              onClick={onAnalyze}
+              disabled={analysisStatus === 'processing' || analysisStatus === 'queued'}
+            >
+              {isAnalyzed ? 'Re-analizar' : 'Analizar'}
+            </Button>
             <Button variant="outline" onClick={() => (window.location.href = '/contracts')}>Volver</Button>
           </div>
         </div>

@@ -17,19 +17,19 @@ export default function Sidebar() {
       <nav className='flex-1 px-2 py-4 space-y-1'>
         <Link href='/dashboard' className='group flex items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition duration-200'>
           <LayoutDashboard className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1' />
-          <span>Dashboard</span>
+          <span>Panel</span>
         </Link>
         <Link href='/contracts' className='group flex items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition duration-200'>
           <FileText className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1' />
-          <span>Contracts</span>
+          <span>Contratos</span>
         </Link>
         <Link href='/analysis' className='group flex items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition duration-200'>
           <BarChart3 className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1' />
-          <span>Analysis</span>
+          <span>Análisis</span>
         </Link>
         <Link href='/upload' className='group flex items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition duration-200'>
           <UploadCloud className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1' />
-          <span>Upload</span>
+          <span>Subir</span>
         </Link>
       </nav>
       <div className='px-3 py-4 border-t border-white/20'>

@@ -1,6 +1,17 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
-import type { User, ApiResponse, Document, DocumentStats, ContractAnalysis, Consultation, ConsultationResponseData, ConsultationFeedback } from '@/types';
+import type { 
+  User, 
+  ApiResponse, 
+  Document, 
+  DocumentStats, 
+  ContractAnalysis, 
+  Consultation, 
+  ConsultationResponseData, 
+  ConsultationFeedback,
+  AnalysisListResponse,
+  PaginatedResponse
+} from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
@@ -73,9 +84,9 @@ export async function apiRegister(data: {
   return res.data as RegisterResponse;
 }
 
-export async function listDocuments(params?: Record<string, unknown>): Promise<ApiResponse<Document[]>> {
+export async function listDocuments(params?: Record<string, unknown>): Promise<PaginatedResponse<Document>> {
   const res = await apiClient.get('/api/documents/', { params });
-  return res.data as ApiResponse<Document[]>;
+  return res.data as PaginatedResponse<Document>;
 }
 
 export async function uploadDocument(
@@ -121,14 +132,41 @@ export async function getStats(): Promise<ApiResponse<DocumentStats>> {
   return res.data as ApiResponse<DocumentStats>;
 }
 
-export async function listAnalyses(params?: Record<string, unknown>): Promise<ApiResponse<ContractAnalysis[]>> {
+export async function listAnalyses(params?: Record<string, unknown>): Promise<AnalysisListResponse> {
   const res = await apiClient.get('/api/contracts/analysis/', { params });
-  return res.data as ApiResponse<ContractAnalysis[]>;
+  return res.data as AnalysisListResponse;
 }
 
 export async function getAnalysis(id: string): Promise<ApiResponse<ContractAnalysis>> {
   const res = await apiClient.get(`/api/contracts/analysis/${id}/`);
-  return res.data as ApiResponse<ContractAnalysis>;
+  const responseData = res.data;
+  
+  // Si la respuesta ya tiene la estructura {success, data}, la devolvemos tal cual
+  if (responseData.success !== undefined && responseData.data !== undefined) {
+    return responseData as ApiResponse<ContractAnalysis>;
+  }
+  
+  // Si la respuesta es directamente el objeto de análisis, lo envolvemos
+  return {
+    success: true,
+    data: responseData as ContractAnalysis,
+  } as ApiResponse<ContractAnalysis>;
+}
+
+export async function getLatestDocumentAnalysis(documentId: string): Promise<ApiResponse<ContractAnalysis>> {
+  const res = await apiClient.get(`/api/contracts/analysis/document/${documentId}/latest`);
+  const responseData = res.data;
+  
+  // Si la respuesta ya tiene la estructura {success, data}, la devolvemos tal cual
+  if (responseData.success !== undefined && responseData.data !== undefined) {
+    return responseData as ApiResponse<ContractAnalysis>;
+  }
+  
+  // Si la respuesta es directamente el objeto de análisis, lo envolvemos
+  return {
+    success: true,
+    data: responseData as ContractAnalysis,
+  } as ApiResponse<ContractAnalysis>;
 }
 
 export type ReanalyzeResponse = {
@@ -148,9 +186,9 @@ export async function chatbotAsk(question: string, context?: Record<string, unkn
   return res.data as ApiResponse<ConsultationResponseData>;
 }
 
-export async function listConsultations(params?: Record<string, unknown>): Promise<ApiResponse<Consultation[]>> {
+export async function listConsultations(params?: Record<string, unknown>): Promise<PaginatedResponse<Consultation>> {
   const res = await apiClient.get('/api/consultations/', { params });
-  return res.data as ApiResponse<Consultation[]>;
+  return res.data as PaginatedResponse<Consultation>;
 }
 
 export async function getConsultation(id: string): Promise<ApiResponse<Consultation>> {
