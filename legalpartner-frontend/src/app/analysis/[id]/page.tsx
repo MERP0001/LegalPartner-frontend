@@ -351,7 +351,7 @@ export default function AnalysisDetailPage() {
             <div className="p-6 space-y-6">
               <div>
                 <h4 className="mb-2 text-sm font-medium text-gray-700">Texto de la Cláusula</h4>
-                <div className="p-4 text-gray-900 whitespace-pre-line rounded-lg bg-gray-50 border-2" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>{selectedClause.clause_text}</div>
+                <div className="p-4 text-gray-900 whitespace-pre-line border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>{selectedClause.clause_text}</div>
               </div>
 
               {selectedClause.analysis && (
@@ -362,7 +362,7 @@ export default function AnalysisDetailPage() {
                   </div>
 
                   {/* <div className="grid grid-cols-3 gap-4">
-                    <div className="p-4 rounded-lg bg-gray-50 border-2" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+                    <div className="p-4 border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
                       <div className="mb-1 text-sm text-gray-600">Favorabilidad</div>
                       <div className="text-lg font-semibold text-gray-900">{selectedClause.analysis.favorability_rate?.toFixed(1) ?? 'N/A'}/10</div>
                       <div className={`text-xs mt-1 px-2 py-1 rounded ${getFavorabilityClass(selectedClause.analysis.favorability_level)}`}>
@@ -374,11 +374,11 @@ export default function AnalysisDetailPage() {
                          selectedClause.analysis.favorability_level}
                       </div>
                     </div>
-                    <div className="p-4 rounded-lg bg-gray-50 border-2" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+                    <div className="p-4 border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
                       <div className="mb-1 text-sm text-gray-600">Confianza</div>
                       <div className="text-lg font-semibold text-gray-900">{selectedClause.analysis.confidence_score ? (selectedClause.analysis.confidence_score * 100).toFixed(0) : 'N/A'}%</div>
                     </div>
-                    <div className="p-4 rounded-lg bg-gray-50 border-2" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+                    <div className="p-4 border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
                       <div className="mb-1 text-sm text-gray-600">Riesgo</div>
                       <div className="text-lg font-semibold text-gray-900">{selectedClause.analysis.is_high_risk ? 'Alto' : 'Normal'}</div>
                     </div>

@@ -114,8 +114,8 @@ export default function DashboardPage() {
 
         {stats && (
           <div className="max-w-4xl mx-auto space-y-8">
-            <div className="grid gap-4 md:grid-cols-4">
-              <div className="card-premium border-2 border-primary-600 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
+            <div className="grid gap-4 md:grid-cols-3 justify-items-center">
+              <div className="transition-all duration-300 ease-in-out transform border-2 card-premium border-primary-600 hover:scale-105 hover:shadow-xl w-full">
                 <div className="card-premium-inner">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-700">Total Documentos</div>
@@ -126,7 +126,7 @@ export default function DashboardPage() {
                   <div className="text-3xl font-bold text-gray-900">{stats.total_documents}</div>
                 </div>
               </div>
-              <div className="card-premium border-2 border-danger-500 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
+              <div className="transition-all duration-300 ease-in-out transform border-2 card-premium border-danger-500 hover:scale-105 hover:shadow-xl w-full">
                 <div className="card-premium-inner">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-700">Procesados</div>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
                   <div className="text-3xl font-bold text-gray-900">{processed}</div>
                 </div>
               </div>
-              <div className="card-premium border-2 border-primary-600 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
+              <div className="transition-all duration-300 ease-in-out transform border-2 card-premium border-primary-600 hover:scale-105 hover:shadow-xl w-full">
                 <div className="card-premium-inner">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-700">Procesando</div>
@@ -148,7 +148,7 @@ export default function DashboardPage() {
                   <div className="text-3xl font-bold text-gray-900">{processing}</div>
                 </div>
               </div>
-              <div className="card-premium border-2 border-danger-500 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
+              {/* <div className="transition-all duration-300 ease-in-out transform border-2 card-premium border-danger-500 hover:scale-105 hover:shadow-xl">
                 <div className="card-premium-inner">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-700">Almacenamiento</div>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="text-3xl font-bold text-gray-900">{storageUsedMb} MB</div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="p-4 panel">
