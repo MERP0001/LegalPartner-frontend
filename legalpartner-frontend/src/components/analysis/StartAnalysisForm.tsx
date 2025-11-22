@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { listDocuments, startAnalysis } from '@/lib/api';
-import { useAnalysisPolling } from '@/hooks/useAnalysisPolling';
+import { useAnalysisMonitor } from '@/hooks/useAnalysisMonitor';
+import { useToast } from '@/hooks/useToast';
 import { Button } from '@/components/common/Button';
 import type { Document, ContractType } from '@/types';
 import { FileText, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
@@ -24,28 +25,11 @@ export default function StartAnalysisForm({
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Polling hook for analysis status
-  const { analysis, isPolling, startPolling } = useAnalysisPolling({
-    analysisId: currentAnalysisId,
-    enabled: !!currentAnalysisId,
-    onComplete: (completedAnalysis) => {
-      setSuccessMessage(`¡Análisis completado! ID: ${completedAnalysis.analysis_id}`);
-      setLoading(false);
-      onAnalysisComplete?.(completedAnalysis.analysis_id);
-    },
-    onFailed: (failedAnalysis) => {
-      const errorMsg = failedAnalysis.error_message || 'El análisis falló';
-      setError(errorMsg);
-      setLoading(false);
-      onAnalysisFailed?.(errorMsg);
-    },
-    onProgress: (progressAnalysis) => {
-      // Update progress if available
-      console.log('Analysis progress:', progressAnalysis.progress_percentage);
-    },
-  });
+  // Hook para notificaciones
+  const { success, error: errorToast, info } = useToast();
 
   // Load documents on mount
   useEffect(() => {
@@ -95,27 +79,25 @@ export default function StartAnalysisForm({
 
       if (res.success && res.data?.analysis_id) {
         setCurrentAnalysisId(res.data.analysis_id);
-        startPolling();
+        if (res.data.task_id) {
+          setCurrentTaskId(res.data.task_id);
+        }
         setSuccessMessage(`Análisis iniciado. ID: ${res.data.analysis_id}`);
-      } else {
-        setError(res.error || res.message || 'No se pudo iniciar el análisis');
+        info('⏳ Análisis iniciado. El proceso puede tardar entre 1-5 minutos');
         setLoading(false);
+      } else {
+        const errorMsg = res.error || res.message || 'No se pudo iniciar el análisis';
+        setError(errorMsg);
+        setLoading(false);
+        errorToast(`✗ ${errorMsg}`);
       }
     } catch (err) {
       console.error('Error starting analysis:', err);
-      setError('Error al conectar con el servidor');
+      const errorMsg = 'Error al conectar con el servidor';
+      setError(errorMsg);
       setLoading(false);
+      errorToast(`✗ ${errorMsg}`);
     }
-  };
-
-  const getProgressPercentage = () => {
-    if (!analysis) return 0;
-    return analysis.progress_percentage || 0;
-  };
-
-  const getCurrentStep = () => {
-    if (!analysis) return 'Iniciando...';
-    return analysis.current_step || 'Procesando análisis...';
   };
 
   return (
@@ -145,7 +127,7 @@ export default function StartAnalysisForm({
               id="document"
               value={selectedDocumentId}
               onChange={(e) => setSelectedDocumentId(e.target.value)}
-              disabled={loading || isPolling}
+              disabled={loading}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               required
             >
@@ -168,7 +150,7 @@ export default function StartAnalysisForm({
             id="contractType"
             value={contractType}
             onChange={(e) => setContractType(e.target.value as ContractType | '')}
-            disabled={loading || isPolling}
+            disabled={loading}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
             <option value="">General</option>
@@ -179,29 +161,6 @@ export default function StartAnalysisForm({
             <option value="transfers">Transferencias</option>
           </select>
         </div>
-
-        {/* Progress Bar (shown during analysis) */}
-        {isPolling && analysis && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">{getCurrentStep()}</span>
-              <span className="font-medium text-primary-600">
-                {getProgressPercentage()}%
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-              <div
-                className="bg-primary-600 h-full transition-all duration-300 ease-out"
-                style={{ width: `${getProgressPercentage()}%` }}
-              />
-            </div>
-            {analysis.estimated_time_remaining && (
-              <p className="text-xs text-gray-500">
-                Tiempo estimado: ~{Math.ceil(analysis.estimated_time_remaining / 60)} min
-              </p>
-            )}
-          </div>
-        )}
 
         {/* Error Message */}
         {error && (
@@ -220,7 +179,7 @@ export default function StartAnalysisForm({
         )}
 
         {/* Info Message */}
-        {!loading && !isPolling && (
+        {!loading && (
           <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-700">
@@ -236,13 +195,13 @@ export default function StartAnalysisForm({
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={loading || isPolling || loadingDocs || documents.length === 0}
+          disabled={loading || loadingDocs || documents.length === 0}
           className="w-full bg-primary-600 hover:bg-primary-700 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          {loading || isPolling ? (
+          {loading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {isPolling ? 'Analizando...' : 'Iniciando...'}
+              Iniciando...
             </>
           ) : (
             'Iniciar Análisis'
@@ -250,7 +209,7 @@ export default function StartAnalysisForm({
         </Button>
 
         {/* View Analysis Button (shown after completion) */}
-        {currentAnalysisId && analysis?.analysis_state === 'processed' && (
+        {currentAnalysisId && (
           <Button
             type="button"
             onClick={() => window.location.href = `/analysis/${currentAnalysisId}`}

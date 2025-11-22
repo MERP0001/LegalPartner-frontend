@@ -1,16 +1,19 @@
 "use client";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ContractClause, FavorabilityLevel } from '@/types';
-import { 
-  X, 
-  TrendingUp, 
-  TrendingDown, 
-  Minus, 
+import {
+  X,
+  TrendingUp,
+  TrendingDown,
+  Minus,
   AlertTriangle,
   Lightbulb,
   Scale,
-  FileText
+  FileText,
+  Info
 } from 'lucide-react';
+import FavorabilityBadge from '@/components/common/FavorabilityBadge';
+import { favorabilityDefinitions } from '@/lib/favorabilityDefinitions';
 
 interface ClauseDetailModalProps {
   clause: ContractClause | null;
@@ -42,17 +45,18 @@ function getFavorabilityIcon(level?: FavorabilityLevel) {
 
 function getFavorabilityLabel(level?: FavorabilityLevel): string {
   const labels = {
-    'very_favorable': 'A favor del Contratante',
-    'favorable': 'A favor del Contratante',
-    'neutral': 'Cláusula adecuada a ambos casos',
-    'unfavorable': 'A favor del Contratador',
-    'very_unfavorable': 'A favor del Contratador',
+    'very_favorable': 'Seguro',
+    'favorable': 'Seguro',
+    'neutral': 'Atención',
+    'unfavorable': 'Crítico',
+    'very_unfavorable': 'Crítico',
   };
   return level ? labels[level] : 'N/A';
 }
 
 export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [showFavorabilityGuide, setShowFavorabilityGuide] = useState(false);
 
   // Handle ESC key
   useEffect(() => {
@@ -87,8 +91,7 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
     >
       <div
         ref={modalRef}
-        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col border-4"
-        style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}
+        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col lp-gradient-border"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -120,7 +123,7 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
               <FileText className="w-4 h-4" />
               Texto de la Cláusula
             </h3>
-            <div className="p-4 border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+            <div className="p-4 border-2 rounded-lg bg-gray-50 lp-gradient-border">
               <p className="leading-relaxed text-gray-800 whitespace-pre-wrap">
                 {clause.clause_text}
               </p>
@@ -140,10 +143,42 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
                 <h3 className="mb-2 text-sm font-semibold text-gray-700">
                   Análisis
                 </h3>
-                <div className="p-4 border-2 rounded-lg bg-blue-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+                <div className="p-4 border-2 rounded-lg bg-blue-50 lp-gradient-border">
                   <p className="leading-relaxed text-gray-800">
                     {clause.analysis.outcome}
                   </p>
+                </div>
+              </div>
+
+              {/* Favorability (Badge + Guide) */}
+              <div className="p-4 bg-white border-2 rounded-lg lp-gradient-border">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-primary-600" /> Favorabilidad
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowFavorabilityGuide(true)}
+                      className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-primary-700 bg-primary-100 rounded hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                      aria-haspopup="dialog"
+                      aria-controls="favorability-guide"
+                    >
+                      <Info className="w-3 h-3" /> Guía
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded ${getFavorabilityColor(clause.analysis.favorability_level)}`}>{getFavorabilityIcon(clause.analysis.favorability_level)}</div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-gray-500">Puntaje</span>
+                    <span className="text-xl font-bold text-gray-900">
+                      {clause.analysis.favorability_rate.toFixed(1)}<span className="text-sm text-gray-500">/10</span>
+                    </span>
+                  </div>
+                  <div className="ml-auto">
+                    <FavorabilityBadge label={getFavorabilityLabel(clause.analysis.favorability_level)} />
+                  </div>
                 </div>
               </div>
 
@@ -161,9 +196,12 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
                     {clause.analysis.favorability_rate.toFixed(1)}
                     <span className="text-sm text-gray-500">/10</span>
                   </div>
-                  <p className="mt-1 text-xs text-gray-600">
-                    {getFavorabilityLabel(clause.analysis.favorability_level)}
-                  </p>
+                  <div className="mt-2">
+                    <FavorabilityBadge 
+                      label={getFavorabilityLabel(clause.analysis.favorability_level)}
+                      className=""
+                    />
+                  </div>
                 </div> */}
 
                 {/* Risk */}
@@ -279,7 +317,7 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
                         )}
                         {!article.content && article.excerpt && (
                           <p className="mt-2 text-sm italic text-gray-700">
-                            "{article.excerpt}"
+                            &ldquo;{article.excerpt}&rdquo;
                           </p>
                         )}
                       </div>
@@ -341,6 +379,48 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
           </button>
         </div>
       </div>
+
+      {/* Nested Favorability Guide Modal */}
+      {showFavorabilityGuide && (
+        <div
+          id="favorability-guide"
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40"
+        >
+          <div className="w-full max-w-md bg-white rounded-xl shadow-lg border-2 lp-gradient-border">
+            <div className="flex items-center justify-between px-5 py-4 border-b">
+              <h3 className="text-sm font-semibold text-gray-800">Guía de Favorabilidad</h3>
+              <button
+                onClick={() => setShowFavorabilityGuide(false)}
+                className="p-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                aria-label="Cerrar guía de favorabilidad"
+              >
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4 text-sm">
+              {Object.entries(favorabilityDefinitions).map(([label, definition]) => (
+                <div key={label} className="flex items-start gap-3">
+                  <FavorabilityBadge label={label} />
+                  <p className="text-gray-700 leading-relaxed">{definition}</p>
+                </div>
+              ))}
+              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700">
+                Estos niveles simplificados ayudan a priorizar revisión: Seguro (sin acción inmediata), Atención (verificar matices), Crítico (intervención recomendada).
+              </div>
+            </div>
+            <div className="px-5 py-3 bg-gray-50 border-t">
+              <button
+                onClick={() => setShowFavorabilityGuide(false)}
+                className="w-full px-4 py-2 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

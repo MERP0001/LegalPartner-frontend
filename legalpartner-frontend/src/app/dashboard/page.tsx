@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { getStats } from "@/lib/api";
 import type { DocumentStats } from "@/types";
 import DocumentCard from "@/components/documents/DocumentCard";
-import { FileText, Settings, CheckCircle2, HardDrive } from "lucide-react";
+import { FileText, Settings, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/store/authStore";
 import Protected from "@/components/layout/Protected";
+import DashboardCharts from "@/components/dashboard/DashboardCharts";
+import StatusProgressBar from "@/components/dashboard/StatusProgressBar";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DocumentStats | null>(null);
@@ -37,9 +39,6 @@ export default function DashboardPage() {
   const processing = stats?.documents_by_status?.processing || stats?.documents_by_status?.PROCESSING || 0;
   const uploaded = stats?.documents_by_status?.uploaded || stats?.documents_by_status?.UPLOADED || 0;
   const failed = stats?.documents_by_status?.failed || stats?.documents_by_status?.FAILED || 0;
-  const storageUsedMb = typeof (stats?.storage_usage as { used_bytes?: number })?.used_bytes === 'number'
-    ? Math.round(((stats!.storage_usage as { used_bytes?: number }).used_bytes as number) / (1024 * 1024))
-    : 0;
 
   return (
     <div className="min-h-screen">
@@ -204,22 +203,23 @@ export default function DashboardPage() {
                   <div className="font-medium">{stats.processing_summary.total_pages}</div>
                 </div>
               </div>
-              <div className="mt-6">
-                <div className="mb-2 text-sm text-gray-600">Estado de documentos</div>
-                <div className="flex w-full h-5 overflow-hidden rounded-full bg-white/90 ring-1 ring-gray-200">
-                  <div className="bg-primary-400" style={{ width: `${uploaded + processing + processed + failed > 0 ? (uploaded/(uploaded+processing+processed+failed))*100 : 0}%` }} />
-                  <div className="bg-warning-400" style={{ width: `${uploaded + processing + processed + failed > 0 ? (processing/(uploaded+processing+processed+failed))*100 : 0}%` }} />
-                  <div className="bg-secondary-400" style={{ width: `${uploaded + processing + processed + failed > 0 ? (processed/(uploaded+processing+processed+failed))*100 : 0}%` }} />
-                  <div className="bg-danger-500" style={{ width: `${uploaded + processing + processed + failed > 0 ? (failed/(uploaded+processing+processed+failed))*100 : 0}%` }} />
-                </div>
-                <div className="flex justify-between mt-2 text-xs text-gray-600">
-                  <span>Subidos: {uploaded}</span>
-                  <span>Procesando: {processing}</span>
-                  <span>Procesados: {processed}</span>
-                  <span>Fallidos: {failed}</span>
-                </div>
-              </div>
+              <StatusProgressBar
+                uploaded={uploaded}
+                processing={processing}
+                processed={processed}
+                failed={failed}
+              />
             </div>
+
+            {/* Gráficas de Análisis */}
+            {auth.isAuthenticated && (
+              <div className="mt-8">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Análisis Avanzados
+                </h2>
+                <DashboardCharts />
+              </div>
+            )}
           </div>
         )}
       </div>

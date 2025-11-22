@@ -5,59 +5,58 @@ import {
   FileText, 
   AlertTriangle, 
   TrendingUp, 
-  TrendingDown, 
-  Minus,
   Clock,
   CheckCircle,
   XCircle,
   BarChart3,
   Shield
 } from 'lucide-react';
+import FavorabilityBadge from '@/components/common/FavorabilityBadge';
 
 interface AnalysisDetailProps {
   analysis: ContractAnalysis;
   onClauseClick?: (clause: ContractClause) => void;
 }
 
-function getFavorabilityColor(level?: FavorabilityLevel): string {
-  const colors = {
-    'very_favorable': 'text-green-700 bg-green-100',
-    'favorable': 'text-blue-700 bg-blue-100',
-    'neutral': 'text-gray-700 bg-gray-100',
-    'unfavorable': 'text-yellow-700 bg-yellow-100',
-    'very_unfavorable': 'text-red-700 bg-red-100',
-  };
-  return level ? colors[level] : 'text-gray-700 bg-gray-100';
-}
+// function getFavorabilityColor(level?: FavorabilityLevel): string {
+//   const colors = {
+//     'very_favorable': 'text-green-700 bg-green-100',
+//     'favorable': 'text-blue-700 bg-blue-100',
+//     'neutral': 'text-gray-700 bg-gray-100',
+//     'unfavorable': 'text-yellow-700 bg-yellow-100',
+//     'very_unfavorable': 'text-red-700 bg-red-100',
+//   };
+//   return level ? colors[level] : 'text-gray-700 bg-gray-100';
+// }
 
-function getFavorabilityIcon(level?: FavorabilityLevel) {
-  const icons = {
-    'very_favorable': <TrendingUp className="w-4 h-4" />,
-    'favorable': <TrendingUp className="w-4 h-4" />,
-    'neutral': <Minus className="w-4 h-4" />,
-    'unfavorable': <TrendingDown className="w-4 h-4" />,
-    'very_unfavorable': <TrendingDown className="w-4 h-4" />,
-  };
-  return level ? icons[level] : <Minus className="w-4 h-4" />;
-}
+// function getFavorabilityIcon(level?: FavorabilityLevel) {
+//   const icons = {
+//     'very_favorable': <TrendingUp className="w-4 h-4" />,
+//     'favorable': <TrendingUp className="w-4 h-4" />,
+//     'neutral': <Minus className="w-4 h-4" />,
+//     'unfavorable': <TrendingDown className="w-4 h-4" />,
+//     'very_unfavorable': <TrendingDown className="w-4 h-4" />,
+//   };
+//   return level ? icons[level] : <Minus className="w-4 h-4" />;
+// }
 
 function getFavorabilityLabel(level?: FavorabilityLevel): string {
   const labels = {
-    'very_favorable': 'Muy Favorable',
-    'favorable': 'Favorable',
-    'neutral': 'Neutral',
-    'unfavorable': 'Desfavorable',
-    'very_unfavorable': 'Muy Desfavorable',
+    'very_favorable': 'Seguro',
+    'favorable': 'Seguro',
+    'neutral': 'Atención',
+    'unfavorable': 'Crítico',
+    'very_unfavorable': 'Crítico',
   };
   return level ? labels[level] : 'N/A';
 }
 
-function getRiskColor(score?: number): string {
-  if (!score) return 'bg-gray-200 text-gray-700';
-  if (score <= 3) return 'bg-green-500 text-white';
-  if (score <= 6) return 'bg-yellow-500 text-white';
-  return 'bg-red-500 text-white';
-}
+// function getRiskColor(score?: number): string {
+//   if (!score) return 'bg-gray-200 text-gray-700';
+//   if (score <= 3) return 'bg-green-500 text-white';
+//   if (score <= 6) return 'bg-yellow-500 text-white';
+//   return 'bg-red-500 text-white';
+// }
 
 function getProgressBarColor(value: number, max: number): string {
   const percentage = (value / max) * 100;
@@ -337,10 +336,10 @@ export default function AnalysisDetail({ analysis, onClauseClick }: AnalysisDeta
                               </span>
                             )}
                             {clause.analysis && (
-                              <span className={`px-2 py-1 text-xs rounded flex items-center gap-1 ${getFavorabilityColor(clause.analysis.favorability_level)}`}>
-                                {getFavorabilityIcon(clause.analysis.favorability_level)}
-                                {getFavorabilityLabel(clause.analysis.favorability_level)}
-                              </span>
+                              <FavorabilityBadge 
+                                label={getFavorabilityLabel(clause.analysis.favorability_level)}
+                                className="text-xs"
+                              />
                             )}
                           </div>
                         </div>

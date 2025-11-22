@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getDocument, getDocumentDownloadUrl, startAnalysis, getLatestDocumentAnalysis } from "@/lib/api";
+import { useAnalysisMonitor } from "@/hooks/useAnalysisMonitor";
+import { useToast } from "@/hooks/useToast";
 import type { Document, ContractAnalysis } from "@/types";
 import { Button } from "@/components/common/Button";
 
@@ -13,6 +15,11 @@ export default function ContractDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Hooks para monitoreo y notificaciones
+  const { startMonitoring } = useAnalysisMonitor();
+  const { success, error: errorToast, info } = useToast();
 
   useEffect(() => {
     const load = async () => {
@@ -40,12 +47,29 @@ export default function ContractDetailPage() {
 
   const onAnalyze = async () => {
     setActionMsg(null);
+    setIsAnalyzing(true);
     try {
       const res = await startAnalysis(id, doc?.contract_type || undefined);
-      if (res?.success) setActionMsg(res.message || "Análisis iniciado");
-      else setActionMsg(res?.error || "No se pudo iniciar el análisis");
+      if (res?.success && res.data?.analysis_id) {
+        if (res.data.task_id) {
+          startMonitoring(res.data.analysis_id, res.data.task_id);
+        } else {
+          startMonitoring(res.data.analysis_id);
+        }
+        setActionMsg(res.message || "Análisis iniciado");
+        info('⏳ Análisis iniciado. El proceso puede tardar entre 1-5 minutos');
+        success(`✓ Análisis iniciado correctamente`);
+      } else {
+        const errorMsg = res?.error || "No se pudo iniciar el análisis";
+        setActionMsg(errorMsg);
+        errorToast(`✗ ${errorMsg}`);
+      }
     } catch {
-      setActionMsg("Error al iniciar análisis");
+      const errorMsg = "Error al iniciar análisis";
+      setActionMsg(errorMsg);
+      errorToast(`✗ ${errorMsg}`);
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -87,7 +111,7 @@ export default function ContractDetailPage() {
           
           {/* Texto Extraído */}
           {doc.extracted_text && (
-            <div className="p-4 bg-white/90 ring-1 ring-gray-100/60 rounded border-2" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+            <div className="p-4 bg-white/90 ring-1 ring-gray-100/60 rounded border-l-4 border-l-primary-600">
               <div className="mb-2 text-sm font-medium text-gray-700">Contenido del Documento</div>
               <div className="max-h-96 overflow-y-auto p-3 bg-gray-50 rounded text-sm text-gray-800 whitespace-pre-wrap">
                 {doc.extracted_text}
@@ -125,9 +149,9 @@ export default function ContractDetailPage() {
             <Button 
               className="bg-primary-600 hover:bg-primary-700 text-white" 
               onClick={onAnalyze}
-              disabled={analysisStatus === 'processing' || analysisStatus === 'queued'}
+              disabled={isAnalyzing || analysisStatus === 'processing' || analysisStatus === 'queued'}
             >
-              {isAnalyzed ? 'Re-analizar' : 'Analizar'}
+              {isAnalyzing ? 'Iniciando...' : isAnalyzed ? 'Re-analizar' : 'Analizar'}
             </Button>
             <Button variant="outline" onClick={() => (window.location.href = '/contracts')}>Volver</Button>
           </div>

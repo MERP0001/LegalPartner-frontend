@@ -4,8 +4,9 @@ import { useParams } from "next/navigation";
 import { getAnalysis } from "@/lib/api";
 import type { ContractAnalysis, ContractClause } from "@/types";
 import Protected from "@/components/layout/Protected";
-import { useAnalysisPolling } from "@/hooks/useAnalysisPolling";
 import { ArrowLeft, FileText, Loader2, XCircle, AlertCircle } from "lucide-react";
+import FavorabilityBadge from "@/components/common/FavorabilityBadge";
+import { favorabilityDefinitions } from "@/lib/favorabilityDefinitions";
 
 function getFavorabilityClass(level: string) {
   const classes = {
@@ -20,11 +21,11 @@ function getFavorabilityClass(level: string) {
 
 function getFavorabilityLabel(level: string): string {
   const labels: Record<string, string> = {
-    'very_favorable': 'A favor del Contratante',
-    'favorable': 'A favor del Contratante',
-    'neutral': 'Cláusula adecuada a ambos casos',
-    'unfavorable': 'A favor del Contratador',
-    'very_unfavorable': 'A favor del Contratador',
+    'very_favorable': 'Seguro',
+    'favorable': 'Seguro',
+    'neutral': 'Atención',
+    'unfavorable': 'Crítico',
+    'very_unfavorable': 'Crítico',
   };
   return labels[level] || level;
 }
@@ -42,20 +43,7 @@ export default function AnalysisDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedClause, setSelectedClause] = useState<ContractClause | null>(null);
-  const [shouldPoll, setShouldPoll] = useState(false);
-
-  const { analysis: pollingAnalysis } = useAnalysisPolling({
-    analysisId: id,
-    enabled: shouldPoll,
-    onComplete: (completedAnalysis) => {
-      setData(completedAnalysis);
-      setShouldPoll(false);
-    },
-    onFailed: (failedAnalysis) => {
-      setError(failedAnalysis.error_message || 'El análisis falló');
-      setShouldPoll(false);
-    }
-  });
+  const [showFavorabilityGuide, setShowFavorabilityGuide] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -69,15 +57,10 @@ export default function AnalysisDetailPage() {
         if (res.success && res.data) {
           console.log('Analysis data:', res.data);
           setData(res.data);
-          // Solo hacer polling si está en proceso o en cola
-          const isProcessing = res.data.analysis_state === 'processing' || res.data.analysis_state === 'queued';
-          setShouldPoll(isProcessing);
         } else if (res.data && !res.success) {
           // Caso donde hay data pero success es false o undefined
           console.log('Data exists but success is false, using data anyway:', res.data);
           setData(res.data);
-          const isProcessing = res.data.analysis_state === 'processing' || res.data.analysis_state === 'queued';
-          setShouldPoll(isProcessing);
         } else {
           console.log('Error or no data:', res);
           setError(res.message || 'No se pudo cargar el análisis');
@@ -91,12 +74,6 @@ export default function AnalysisDetailPage() {
     };
     if (id) load();
   }, [id]);
-
-  useEffect(() => {
-    if (pollingAnalysis) {
-      setData(pollingAnalysis);
-    }
-  }, [pollingAnalysis]);
 
   if (loading) {
     return (
@@ -294,9 +271,10 @@ export default function AnalysisDetailPage() {
                             {/* <span className="ml-2 text-sm text-gray-500">• {clause.clause_type}</span> */}
                           </div>
                           {clause.analysis && (
-                            <span className={`px-2 py-1 text-xs font-medium rounded border ${getFavorabilityClass(clause.analysis.favorability_level)}`}>
-                              {getFavorabilityLabel(clause.analysis.favorability_level)}
-                            </span>
+                            <FavorabilityBadge 
+                              label={getFavorabilityLabel(clause.analysis.favorability_level)}
+                              className=""
+                            />
                           )}
                         </div>
                         <p className="mb-3 text-sm text-gray-700 line-clamp-2">{clause.text_preview || clause.clause_text}</p>
@@ -342,11 +320,17 @@ export default function AnalysisDetailPage() {
       {selectedClause && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={() => setSelectedClause(null)}>
           <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border-4" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }} onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 flex items-center justify-between p-6 bg-white border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Detalle de Cláusula {(data.clauses?.filter(c => c.has_analysis).findIndex(c => c.clause_id === selectedClause.clause_id) ?? -1) + 1}</h3>
-              <button onClick={() => setSelectedClause(null)} className="text-gray-400 transition-colors hover:text-gray-600">
-                <XCircle className="w-6 h-6" />
-              </button>
+            <div className="sticky top-0 flex items-center justify-between gap-3 p-6 bg-white border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 flex-1">Detalle de Cláusula {(data.clauses?.filter(c => c.has_analysis).findIndex(c => c.clause_id === selectedClause.clause_id) ?? -1) + 1}</h3>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowFavorabilityGuide(true)}
+                  className="px-3 py-1 text-xs font-semibold rounded-full bg-primary-100 text-primary-700 hover:bg-primary-200"
+                >Guía</button>
+                <button onClick={() => setSelectedClause(null)} className="text-gray-400 transition-colors hover:text-gray-600" aria-label="Cerrar modal cláusula">
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
             </div>
             <div className="p-6 space-y-6">
               <div>
@@ -447,6 +431,32 @@ export default function AnalysisDetailPage() {
               )}
             </div>
           </div>
+          {showFavorabilityGuide && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={() => setShowFavorabilityGuide(false)}>
+              <div className="w-full max-w-sm bg-white rounded-lg shadow-lg border-4" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }} onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between px-4 py-3 border-b">
+                  <h4 className="text-sm font-semibold text-gray-800">Guía Favorabilidad</h4>
+                  <button onClick={() => setShowFavorabilityGuide(false)} className="p-1 rounded hover:bg-gray-100" aria-label="Cerrar guía">
+                    <XCircle className="w-4 h-4 text-gray-500" />
+                  </button>
+                </div>
+                <div className="p-4 space-y-3 text-sm">
+                  {Object.entries(favorabilityDefinitions).map(([label, def]) => (
+                    <div key={label} className="flex items-start gap-2">
+                      <FavorabilityBadge label={label} />
+                      <p className="text-gray-700 leading-relaxed">{def}</p>
+                    </div>
+                  ))}
+                  <div className="p-2 mt-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded">
+                    Usa la favorabilidad para priorizar revisión: Seguro (sin acción), Atención (verificar), Crítico (intervenir).
+                  </div>
+                </div>
+                <div className="px-4 py-3 border-t bg-gray-50">
+                  <button onClick={() => setShowFavorabilityGuide(false)} className="w-full px-3 py-2 text-sm font-semibold text-white rounded bg-primary-600 hover:bg-primary-700">Cerrar</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
