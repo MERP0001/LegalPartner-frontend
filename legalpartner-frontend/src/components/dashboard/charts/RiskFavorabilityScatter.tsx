@@ -1,218 +1,167 @@
 "use client";
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useAnalysisStats } from '@/hooks/useAnalysisStats';
 import type { ContractAnalysis } from '@/types';
+import { TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import './charts.css';
-
-interface ScatterDataPoint {
-  x: number; // favorability
-  y: number; // risk_score
-  size: number; // total_clauses
-  contractType: string;
-  documentName: string;
-  analysis_id: string;
-}
 
 interface RiskFavorabilityScatterProps {
   analyses: ContractAnalysis[];
   onPointClick?: (analysis: ContractAnalysis) => void;
 }
 
-// Colores por tipo de contrato
-const contractTypeColors = {
-  rent: '#8884d8',
-  mortgage: '#82ca9d',
-  services: '#ffc658',
-  employment: '#ff7300',
-  transfers: '#8dd1e1',
-  default: '#d084d0'
-};
-
-// Función para obtener color por tipo de contrato
-const getColorByContractType = (contractType?: string): string => {
-  if (!contractType) return contractTypeColors.default;
-  return contractTypeColors[contractType as keyof typeof contractTypeColors] || contractTypeColors.default;
-};
-
-// Tooltip personalizado
-interface TooltipProps {
-  active?: boolean;
-  payload?: Array<{
-    payload: ScatterDataPoint;
-  }>;
-}
-
-const CustomTooltip = ({ active, payload }: TooltipProps) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload as ScatterDataPoint;
-    return (
-      <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-        <p className="font-semibold text-gray-900 mb-1">
-          {data.documentName}
-        </p>
-        <p className="text-sm text-gray-600">
-          Tipo: <span className="capitalize">{data.contractType}</span>
-        </p>
-        <p className="text-sm text-gray-600">
-          Favorabilidad: <span className="font-medium">{data.x.toFixed(1)}/10</span>
-        </p>
-        <p className="text-sm text-gray-600">
-          Riesgo: <span className="font-medium">{data.y.toFixed(1)}/10</span>
-        </p>
-        <p className="text-sm text-gray-600">
-          Cláusulas: <span className="font-medium">{data.size}</span>
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
-
-export default function RiskFavorabilityScatter({ 
-  analyses, 
-  onPointClick 
+export default function RiskFavorabilityScatter({
+  analyses,
 }: RiskFavorabilityScatterProps) {
-  // Transformar datos para el scatter plot
-  const scatterData: ScatterDataPoint[] = analyses
-    .filter(analysis => {
-      const hasValidData = (
-        (analysis.average_favorability !== undefined && analysis.average_favorability !== null) && 
-        (analysis.risk_score !== undefined && analysis.risk_score !== null) &&
-        (analysis.analysis_state === 'completed' || analysis.analysis_state === 'processed')
-      );
-      
-      // Debug log para entender qué datos tenemos
-      if (!hasValidData) {
-        console.log('Analysis filtered out:', {
-          id: analysis.analysis_id,
-          state: analysis.analysis_state,
-          favorability: analysis.average_favorability,
-          risk: analysis.risk_score
-        });
-      }
-      
-      return hasValidData;
-    })
-    .map(analysis => ({
-      x: analysis.average_favorability || 0,
-      y: analysis.risk_score || 0,
-      size: Math.max(analysis.total_clauses || 1, 1), // Mínimo 1 para visibilidad
-      contractType: analysis.contract_type || 'default',
-      documentName: analysis.document_name || 
-                   analysis.document_filename || 
-                   `Análisis ${analysis.analysis_id.slice(0, 8)}`,
-      analysis_id: analysis.analysis_id
-    }));
+  // Filtrar análisis completados
+  const completedAnalyses = analyses.filter(
+    (analysis) =>
+      analysis.analysis_state === 'completed' ||
+      analysis.analysis_state === 'processed'
+  );
 
-  console.log('Scatter data processed:', {
-    totalAnalyses: analyses.length,
-    validScatterData: scatterData.length,
-    sampleData: scatterData.slice(0, 3)
-  });
+  const stats = useAnalysisStats(completedAnalyses);
 
-  const handlePointClick = (data: ScatterDataPoint) => {
-    if (onPointClick) {
-      const analysis = analyses.find(a => a.analysis_id === data.analysis_id);
-      if (analysis) {
-        onPointClick(analysis);
-      }
-    }
-  };
-
-  if (scatterData.length === 0) {
+  if (completedAnalyses.length === 0) {
     return (
       <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Favorabilidad vs Riesgo
+          Resumen de Análisis
         </h3>
         <div className="flex items-center justify-center h-64 text-gray-500">
-          No hay datos suficientes para mostrar la gráfica
+          No hay análisis completados para mostrar
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Favorabilidad vs Riesgo
-        </h3>
-        <div className="text-sm text-gray-500">
-          {scatterData.length} análisis completados
+    <div className="space-y-6">
+      {/* Resumen General - Tarjetas principales */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Riesgo Promedio */}
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+            <p className="text-sm font-medium text-blue-900">Riesgo Promedio</p>
+          </div>
+          <p className="text-3xl font-bold text-blue-700">{stats.averageRisk}/10</p>
+          <p className="text-xs text-blue-600 mt-2">
+            {stats.totalAnalyses} contratos analizados
+          </p>
+        </div>
+
+        {/* Favorabilidad Promedio */}
+        <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle className="w-5 h-5 text-green-600" />
+            <p className="text-sm font-medium text-green-900">Favorabilidad</p>
+          </div>
+          <p className="text-3xl font-bold text-green-700">{stats.averageFavorability}/10</p>
+          <p className="text-xs text-green-600 mt-2">
+            Promedio de todos los análisis
+          </p>
+        </div>
+
+        {/* Rango de Riesgo */}
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-5 h-5 text-orange-600" />
+            <p className="text-sm font-medium text-orange-900">Rango de Riesgo</p>
+          </div>
+          <div className="text-2xl font-bold text-orange-700">
+            {stats.lowestRisk} - {stats.highestRisk}
+          </div>
+          <p className="text-xs text-orange-600 mt-2">
+            Mínimo y máximo riesgo
+          </p>
+        </div>
+
+        {/* Cláusulas Problemáticas */}
+        <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+            <p className="text-sm font-medium text-red-900">Problemas</p>
+          </div>
+          <p className="text-3xl font-bold text-red-700">{stats.totalFlaggedClauses}</p>
+          <p className="text-xs text-red-600 mt-2">
+            De {stats.totalClauses} cláusulas totales
+          </p>
         </div>
       </div>
-      
-      <div className="h-80 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart
-            margin={{
-              top: 20,
-              right: 20,
-              bottom: 20,
-              left: 20,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
-              type="number" 
-              dataKey="x" 
-              name="Favorabilidad"
-              domain={[0, 10]}
-              tickFormatter={(value) => `${value.toFixed(1)}`}
-              label={{ 
-                value: 'Favorabilidad (0-10)', 
-                position: 'insideBottom', 
-                offset: -10,
-                style: { textAnchor: 'middle' }
-              }}
-            />
-            <YAxis 
-              type="number" 
-              dataKey="y" 
-              name="Riesgo"
-              domain={[0, 10]}
-              tickFormatter={(value) => `${value.toFixed(1)}`}
-              label={{ 
-                value: 'Riesgo (0-10)', 
-                angle: -90, 
-                position: 'insideLeft',
-                style: { textAnchor: 'middle' }
-              }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Scatter 
-              data={scatterData} 
-              fill="#8884d8"
-              onClick={handlePointClick}
-              style={{ cursor: onPointClick ? 'pointer' : 'default' }}
-            >
-              {scatterData.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={getColorByContractType(entry.contractType)}
-                  r={Math.min(Math.max(entry.size / 2, 4), 12)} // Radio entre 4 y 12
-                />
-              ))}
-            </Scatter>
-          </ScatterChart>
-        </ResponsiveContainer>
-      </div>
 
-      {/* Leyenda de tipos de contrato */}
-      <div className="mt-4 flex flex-wrap gap-3 text-xs">
-        {Object.keys(contractTypeColors).map((type) => (
-          <div key={type} className="flex items-center gap-1">
-            <div className={`chart-legend-dot contract-type-${type}`} />
-            <span className="capitalize text-gray-600">
-              {type === 'default' ? 'Otros' : type}
-            </span>
+      {/* Distribución de Riesgos */}
+      <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Distribución por Nivel de Riesgo
+        </h3>
+        <div className="grid grid-cols-3 gap-4">
+          {/* Riesgo Bajo */}
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-700">{stats.lowRiskCount}</p>
+              <p className="text-sm text-green-600 mt-1">Riesgo Bajo (≤3)</p>
+              <p className="text-xs text-green-500 mt-2">
+                {Math.round((stats.lowRiskCount / stats.totalAnalyses) * 100)}%
+              </p>
+            </div>
           </div>
-        ))}
+
+          {/* Riesgo Medio */}
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-yellow-700">{stats.mediumRiskCount}</p>
+              <p className="text-sm text-yellow-600 mt-1">Riesgo Medio (3-6)</p>
+              <p className="text-xs text-yellow-500 mt-2">
+                {Math.round((stats.mediumRiskCount / stats.totalAnalyses) * 100)}%
+              </p>
+            </div>
+          </div>
+
+          {/* Riesgo Alto */}
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-red-700">{stats.highRiskCount}</p>
+              <p className="text-sm text-red-600 mt-1">Riesgo Alto (&gt;6)</p>
+              <p className="text-xs text-red-500 mt-2">
+                {Math.round((stats.highRiskCount / stats.totalAnalyses) * 100)}%
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Información adicional */}
-      <div className="mt-3 text-xs text-gray-500">
-        El tamaño de cada punto representa el número de cláusulas del contrato.
+      {/* Análisis por Favorabilidad */}
+      <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Resumen de Favorabilidad
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          {/* Favorables */}
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-700">
+                {stats.favorableCount}
+              </p>
+              <p className="text-sm text-green-600 mt-1">Contratos Favorables</p>
+              <p className="text-xs text-green-500 mt-2">
+                {Math.round((stats.favorableCount / stats.totalAnalyses) * 100)}%
+              </p>
+            </div>
+          </div>
+
+          {/* Desfavorables */}
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-red-700">
+                {stats.unfavorableCount}
+              </p>
+              <p className="text-sm text-red-600 mt-1">Contratos Desfavorables</p>
+              <p className="text-xs text-red-500 mt-2">
+                {Math.round((stats.unfavorableCount / stats.totalAnalyses) * 100)}%
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -49,13 +49,13 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
     return (
       <div className={`space-y-6 ${className || ''}`}>
         {/* Loading skeleton */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm animate-pulse">
-            <div className="h-6 bg-gray-200 rounded mb-4 w-48"></div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm animate-pulse">
+            <div className="w-48 h-6 mb-4 bg-gray-200 rounded"></div>
             <div className="h-64 bg-gray-100 rounded"></div>
           </div>
-          <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm animate-pulse">
-            <div className="h-6 bg-gray-200 rounded mb-4 w-48"></div>
+          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm animate-pulse">
+            <div className="w-48 h-6 mb-4 bg-gray-200 rounded"></div>
             <div className="h-64 bg-gray-100 rounded"></div>
           </div>
         </div>
@@ -66,7 +66,7 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
   if (error) {
     return (
       <div className={`${className || ''}`}>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
           <div className="flex">
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
@@ -102,9 +102,9 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
   if (completedAnalyses.length === 0) {
     return (
       <div className={`${className || ''}`}>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <div className="p-6 border border-blue-200 rounded-lg bg-blue-50">
           <div className="text-center">
-            <h3 className="text-lg font-medium text-blue-900 mb-2">
+            <h3 className="mb-2 text-lg font-medium text-blue-900">
               No hay análisis completados
             </h3>
             <p className="text-sm text-blue-700">
@@ -119,9 +119,9 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
   return (
     <div className={`space-y-6 ${className || ''}`}>
       {/* Debugger temporal - remover en producción */}
-      <AnalysisDebugger analyses={completedAnalyses} />
+      {/* <AnalysisDebugger analyses={completedAnalyses} /> */}
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Scatter Plot: Favorabilidad vs Riesgo */}
         <RiskFavorabilityScatter 
           analyses={completedAnalyses}
@@ -135,8 +135,8 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
       </div>
 
       {/* Información adicional */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="text-sm text-gray-600 space-y-2">
+      <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center justify-between">
             <span>Total de análisis cargados:</span>
             <span className="font-medium">{analyses.length}</span>
@@ -152,7 +152,7 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
           <div className="flex items-center justify-between">
             <span>Con datos de favorabilidad:</span>
             <span className="font-medium">
-              {completedAnalyses.filter(a => a.average_favorability !== undefined && a.average_favorability !== null).length}
+              {completedAnalyses.filter(a => a.overall_favorability !== undefined && a.overall_favorability !== null).length}
             </span>
           </div>
           <div className="flex items-center justify-between">

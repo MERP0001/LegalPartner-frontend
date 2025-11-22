@@ -56,10 +56,10 @@ export default function AnalysisProgressBar({
   const isProcessing = isPolling && !isCompleted && !isFailed;
   
   // Usar progreso del endpoint de progreso si está disponible, sino usar el del stage
-  const progressPercentage = analysis.progress ?? progressData?.progress ?? 0;
+  const progressPercentage = analysis.progress_percentage ?? progressData?.progress ?? 0;
   
   // Usar descripción del endpoint de progreso si está disponible, sino usar la del stage
-  const displayDescription = analysis.description ?? analysis.stage ?? progressData?.description;
+  const displayDescription = analysis.current_step ?? progressData?.description;
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -68,7 +68,7 @@ export default function AnalysisProgressBar({
         {/* Header */}
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-800">
-            {analysis.stage ?? progressData?.label}
+            {progressData?.label}
           </h3>
           {isProcessing && (
             <div className="flex items-center gap-2 text-blue-600">
@@ -151,30 +151,12 @@ export default function AnalysisProgressBar({
         )}
 
         {/* Detalles del endpoint de progreso */}
-        {(analysis.details || analysis.total_steps) && (
+        {analysis.current_step && (
           <div className="grid grid-cols-2 gap-3 pt-4 border-t text-xs">
-            {analysis.details?.clauses_extracted !== undefined && (
-              <div>
-                <p className="text-gray-600">Cláusulas extraídas</p>
-                <p className="font-semibold text-gray-800">{analysis.details.clauses_extracted}</p>
-              </div>
-            )}
-            {analysis.details?.clauses_analyzed !== undefined && (
-              <div>
-                <p className="text-gray-600">Cláusulas analizadas</p>
-                <p className="font-semibold text-gray-800">{analysis.details.clauses_analyzed}</p>
-              </div>
-            )}
-            {analysis.total_steps !== undefined && (
-              <div>
-                <p className="text-gray-600">Pasos totales</p>
-                <p className="font-semibold text-gray-800">{analysis.total_steps}</p>
-              </div>
-            )}
-            {analysis.current_step_number !== undefined && (
+            {analysis.current_step && (
               <div>
                 <p className="text-gray-600">Paso actual</p>
-                <p className="font-semibold text-gray-800">{analysis.current_step_number}</p>
+                <p className="font-semibold text-gray-800">{analysis.current_step}</p>
               </div>
             )}
           </div>

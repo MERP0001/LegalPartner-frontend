@@ -1,8 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { listDocuments, startAnalysis } from '@/lib/api';
-import { useAnalysisMonitor } from '@/hooks/useAnalysisMonitor';
-import { useToast } from '@/hooks/useToast';
 import { Button } from '@/components/common/Button';
 import type { Document, ContractType } from '@/types';
 import { FileText, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
@@ -29,8 +27,7 @@ export default function StartAnalysisForm({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Hook para notificaciones
-  const { success, error: errorToast, info } = useToast();
-
+ 
   // Load documents on mount
   useEffect(() => {
     const loadDocs = async () => {
@@ -82,44 +79,40 @@ export default function StartAnalysisForm({
         if (res.data.task_id) {
           setCurrentTaskId(res.data.task_id);
         }
-        setSuccessMessage(`Análisis iniciado. ID: ${res.data.analysis_id}`);
-        info('⏳ Análisis iniciado. El proceso puede tardar entre 1-5 minutos');
         setLoading(false);
       } else {
         const errorMsg = res.error || res.message || 'No se pudo iniciar el análisis';
         setError(errorMsg);
         setLoading(false);
-        errorToast(`✗ ${errorMsg}`);
       }
     } catch (err) {
       console.error('Error starting analysis:', err);
       const errorMsg = 'Error al conectar con el servidor';
       setError(errorMsg);
       setLoading(false);
-      errorToast(`✗ ${errorMsg}`);
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
       <div className="flex items-center gap-2 mb-4">
-        <FileText className="h-5 w-5 text-primary-600" />
+        <FileText className="w-5 h-5 text-primary-600" />
         <h3 className="text-lg font-semibold text-gray-900">Iniciar Análisis de Contrato</h3>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Document Selector */}
         <div>
-          <label htmlFor="document" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="document" className="block mb-1 text-sm font-medium text-gray-700">
             Documento a analizar
           </label>
           {loadingDocs ? (
-            <div className="flex items-center gap-2 text-sm text-gray-500 py-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="flex items-center gap-2 py-2 text-sm text-gray-500">
+              <Loader2 className="w-4 h-4 animate-spin" />
               Cargando documentos...
             </div>
           ) : documents.length === 0 ? (
-            <div className="text-sm text-gray-500 py-2">
+            <div className="py-2 text-sm text-gray-500">
               No hay documentos procesados disponibles
             </div>
           ) : (
@@ -143,7 +136,7 @@ export default function StartAnalysisForm({
 
         {/* Contract Type Selector */}
         <div>
-          <label htmlFor="contractType" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="contractType" className="block mb-1 text-sm font-medium text-gray-700">
             Tipo de contrato
           </label>
           <select
@@ -164,27 +157,49 @@ export default function StartAnalysisForm({
 
         {/* Error Message */}
         {error && (
-          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <XCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+          <div className="flex items-center gap-2 p-3 border border-red-200 rounded-lg bg-red-50">
+            <XCircle className="flex-shrink-0 w-5 h-5 text-red-600" />
             <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
 
-        {/* Success Message */}
-        {successMessage && !error && (
-          <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+        {/* Success Message with Analysis Details */}
+        {currentAnalysisId && !error && (
+          <div className="p-4 border border-green-300 rounded-lg bg-green-50">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="flex-shrink-0 w-5 h-5 text-green-600 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-semibold text-green-900">✓ Análisis iniciado correctamente</p>
+                <p className="text-sm text-green-800 mt-2">
+                  <strong>ID del Análisis:</strong> {currentAnalysisId}
+                </p>
+                {currentTaskId && (
+                  <p className="text-sm text-green-800">
+                    <strong>ID de Tarea:</strong> {currentTaskId}
+                  </p>
+                )}
+                <p className="text-xs text-green-700 mt-2">
+                  El análisis se está procesando. Esto puede tardar entre 1-5 minutos.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {successMessage && !error && !currentAnalysisId && (
+          <div className="flex items-center gap-2 p-3 border border-green-200 rounded-lg bg-green-50">
+            <CheckCircle className="flex-shrink-0 w-5 h-5 text-green-600" />
             <p className="text-sm text-green-700">{successMessage}</p>
           </div>
         )}
 
         {/* Info Message */}
         {!loading && (
-          <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-start gap-2 p-3 border border-blue-200 rounded-lg bg-blue-50">
             <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-700">
               <p className="font-medium">El análisis puede tardar entre 1-5 minutos</p>
-              <p className="text-xs mt-1">
+              <p className="mt-1 text-xs">
                 El progreso se actualizará automáticamente. Puedes cerrar esta pantalla y revisar
                 el estado en la sección de Análisis.
               </p>
@@ -196,11 +211,11 @@ export default function StartAnalysisForm({
         <Button
           type="submit"
           disabled={loading || loadingDocs || documents.length === 0}
-          className="w-full bg-primary-600 hover:bg-primary-700 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="w-full text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               Iniciando...
             </>
           ) : (
@@ -213,7 +228,7 @@ export default function StartAnalysisForm({
           <Button
             type="button"
             onClick={() => window.location.href = `/analysis/${currentAnalysisId}`}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
+            className="w-full text-white bg-green-600 hover:bg-green-700"
           >
             Ver Resultados del Análisis
           </Button>

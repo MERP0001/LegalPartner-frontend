@@ -8,12 +8,12 @@ import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/store/authStore";
 import Protected from "@/components/layout/Protected";
 import DashboardCharts from "@/components/dashboard/DashboardCharts";
-import StatusProgressBar from "@/components/dashboard/StatusProgressBar";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DocumentStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"documents" | "analytics">("documents");
   const auth = useAuthStore();
 
   useEffect(() => {
@@ -37,8 +37,6 @@ export default function DashboardPage() {
 
   const processed = stats?.documents_by_status?.processed || stats?.documents_by_status?.PROCESSED || 0;
   const processing = stats?.documents_by_status?.processing || stats?.documents_by_status?.PROCESSING || 0;
-  const uploaded = stats?.documents_by_status?.uploaded || stats?.documents_by_status?.UPLOADED || 0;
-  const failed = stats?.documents_by_status?.failed || stats?.documents_by_status?.FAILED || 0;
 
   return (
     <div className="min-h-screen">
@@ -114,7 +112,7 @@ export default function DashboardPage() {
         {stats && (
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="grid gap-4 md:grid-cols-3 justify-items-center">
-              <div className="transition-all duration-300 ease-in-out transform border-2 card-premium border-primary-600 hover:scale-105 hover:shadow-xl w-full">
+              <div className="w-full transition-all duration-300 ease-in-out transform border-2 card-premium border-primary-600 hover:scale-105 hover:shadow-xl">
                 <div className="card-premium-inner">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-700">Total Documentos</div>
@@ -125,7 +123,7 @@ export default function DashboardPage() {
                   <div className="text-3xl font-bold text-gray-900">{stats.total_documents}</div>
                 </div>
               </div>
-              <div className="transition-all duration-300 ease-in-out transform border-2 card-premium border-danger-500 hover:scale-105 hover:shadow-xl w-full">
+              <div className="w-full transition-all duration-300 ease-in-out transform border-2 card-premium border-danger-500 hover:scale-105 hover:shadow-xl">
                 <div className="card-premium-inner">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-700">Procesados</div>
@@ -136,7 +134,7 @@ export default function DashboardPage() {
                   <div className="text-3xl font-bold text-gray-900">{processed}</div>
                 </div>
               </div>
-              <div className="transition-all duration-300 ease-in-out transform border-2 card-premium border-primary-600 hover:scale-105 hover:shadow-xl w-full">
+              <div className="w-full transition-all duration-300 ease-in-out transform border-2 card-premium border-primary-600 hover:scale-105 hover:shadow-xl">
                 <div className="card-premium-inner">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-700">Procesando</div>
@@ -161,24 +159,61 @@ export default function DashboardPage() {
             </div>
 
             <div className="p-4 panel">
-              <h3 className="mb-3 font-semibold text-gray-900">Documentos Recientes</h3>
-              {stats.recent_uploads.length === 0 ? (
-                <div className="text-gray-600">Sin documentos recientes.</div>
-              ) : (
-                <div className="space-y-3">
-                  {stats.recent_uploads.map((d, index) => (
-                    <div 
-                      key={d.document_id} 
-                      onClick={() => (window.location.href = `/contracts/${d.document_id}`)} 
-                      className={`cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl border-2 rounded-lg p-3 ${
-                        index % 2 === 0 
-                          ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50' 
-                          : 'border-danger-500 hover:border-danger-600 hover:bg-red-50'
-                      }`}
-                    >
-                      <DocumentCard doc={d} />
+              {/* Tabs */}
+              <div className="flex gap-2 mb-4 border-b border-gray-200">
+                <button
+                  onClick={() => setActiveTab("documents")}
+                  className={`px-4 py-2 font-medium text-sm transition-all ${
+                    activeTab === "documents"
+                      ? "text-primary-600 border-b-2 border-primary-600"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  📄 Documentos Recientes
+                </button>
+                <button
+                  onClick={() => setActiveTab("analytics")}
+                  className={`px-4 py-2 font-medium text-sm transition-all ${
+                    activeTab === "analytics"
+                      ? "text-primary-600 border-b-2 border-primary-600"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  📊 Gráficas
+                </button>
+              </div>
+
+              {/* Contenido del Tab - Documentos Recientes */}
+              {activeTab === "documents" && (
+                <div>
+                  <h3 className="mb-3 font-semibold text-gray-900">Documentos Recientes</h3>
+                  {stats.recent_uploads.length === 0 ? (
+                    <div className="text-gray-600">Sin documentos recientes.</div>
+                  ) : (
+                    <div className="space-y-3">
+                      {stats.recent_uploads.map((d, index) => (
+                        <div 
+                          key={d.document_id} 
+                          onClick={() => (window.location.href = `/contracts/${d.document_id}`)} 
+                          className={`cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl border-2 rounded-lg p-3 ${
+                            index % 2 === 0 
+                              ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50' 
+                              : 'border-danger-500 hover:border-danger-600 hover:bg-red-50'
+                          }`}
+                        >
+                          <DocumentCard doc={d} />
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
+                </div>
+              )}
+
+              {/* Contenido del Tab - Gráficas */}
+              {activeTab === "analytics" && (
+                <div>
+                  <h3 className="mb-4 font-semibold text-gray-900">Análisis Avanzados</h3>
+                  <DashboardCharts />
                 </div>
               )}
             </div>
@@ -203,23 +238,8 @@ export default function DashboardPage() {
                   <div className="font-medium">{stats.processing_summary.total_pages}</div>
                 </div>
               </div>
-              <StatusProgressBar
-                uploaded={uploaded}
-                processing={processing}
-                processed={processed}
-                failed={failed}
-              />
             </div>
 
-            {/* Gráficas de Análisis */}
-            {auth.isAuthenticated && (
-              <div className="mt-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Análisis Avanzados
-                </h2>
-                <DashboardCharts />
-              </div>
-            )}
           </div>
         )}
       </div>
