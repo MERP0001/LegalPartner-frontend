@@ -91,7 +91,7 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
     >
       <div
         ref={modalRef}
-        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col lp-gradient-border"
+        className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col lp-gradient-border"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -135,6 +135,20 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
             )}
           </div>
 
+          {/* Divider */}
+          {clause.analysis && (
+            <div className="relative py-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-primary-300 to-transparent"></div>
+              </div>
+              <div className="relative flex justify-center">
+                <span className="px-6 py-1 text-xs font-semibold tracking-wider uppercase bg-white border rounded-full shadow-sm text-primary-600 border-primary-200">
+                  Análisis Detallado
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Analysis Section */}
           {clause.analysis && (
             <>
@@ -153,14 +167,14 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
               {/* Favorability (Badge + Guide) */}
               <div className="p-4 bg-white border-2 rounded-lg lp-gradient-border">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
                     <TrendingUp className="w-4 h-4 text-primary-600" /> Favorabilidad
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setShowFavorabilityGuide(true)}
-                      className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-primary-700 bg-primary-100 rounded hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                      className="flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300"
                       aria-haspopup="dialog"
                       aria-controls="favorability-guide"
                     >
@@ -240,45 +254,74 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
                 </div>
               </div> */}
 
-              {/* Risk Factors */}
-              {clause.analysis.risk_factors && clause.analysis.risk_factors.length > 0 && (
-                <div>
-                  <h3 className="flex items-center gap-2 mb-3 text-sm font-semibold text-gray-700">
-                    <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                    Factores de Riesgo
-                  </h3>
-                  <ul className="space-y-2">
-                    {clause.analysis.risk_factors.map((risk, index) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-2 p-3 border border-yellow-200 rounded-lg bg-yellow-50"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-yellow-600 mt-2 flex-shrink-0" />
-                        <span className="text-sm text-gray-800">{risk}</span>
-                      </li>
-                    ))}
-                  </ul>
+              {/* Divider */}
+              <div className="relative py-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-yellow-300 to-transparent"></div>
                 </div>
-              )}
+                <div className="relative flex justify-center">
+                  <span className="px-6 py-1 text-xs font-semibold tracking-wider text-yellow-700 uppercase bg-white border border-yellow-200 rounded-full shadow-sm">
+                    Evaluación
+                  </span>
+                </div>
+              </div>
 
-              {/* Recommendations */}
-              {clause.analysis.recommendations && clause.analysis.recommendations.length > 0 && (
-                <div>
-                  <h3 className="flex items-center gap-2 mb-3 text-sm font-semibold text-gray-700">
-                    <Lightbulb className="w-4 h-4 text-blue-600" />
-                    Recomendaciones
-                  </h3>
-                  <ul className="space-y-2">
-                    {clause.analysis.recommendations.map((rec, index) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-2 p-3 border border-blue-200 rounded-lg bg-blue-50"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
-                        <span className="text-sm text-gray-800">{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
+              {/* Risk Factors and Recommendations in parallel */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {/* Risk Factors */}
+                {clause.analysis.risk_factors && clause.analysis.risk_factors.length > 0 && (
+                  <div>
+                    <h3 className="flex items-center gap-2 mb-3 text-sm font-semibold text-gray-700">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                      Factores de Riesgo
+                    </h3>
+                    <ul className="space-y-2">
+                      {clause.analysis.risk_factors.map((risk, index) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-2 p-3 border border-yellow-200 rounded-lg bg-yellow-50"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-yellow-600 mt-2 flex-shrink-0" />
+                          <span className="text-sm text-gray-800">{risk}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Recommendations */}
+                {clause.analysis.recommendations && clause.analysis.recommendations.length > 0 && (
+                  <div>
+                    <h3 className="flex items-center gap-2 mb-3 text-sm font-semibold text-gray-700">
+                      <Lightbulb className="w-4 h-4 text-blue-600" />
+                      Recomendaciones
+                    </h3>
+                    <ul className="space-y-2">
+                      {clause.analysis.recommendations.map((rec, index) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-2 p-3 border border-blue-200 rounded-lg bg-blue-50"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
+                          <span className="text-sm text-gray-800">{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              {clause.analysis.related_articles && clause.analysis.related_articles.length > 0 && (
+                <div className="relative py-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent"></div>
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="px-6 py-1 text-xs font-semibold tracking-wider text-purple-600 uppercase bg-white border border-purple-200 rounded-full shadow-sm">
+                      Referencias Legales
+                    </span>
+                  </div>
                 </div>
               )}
 
@@ -289,7 +332,7 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
                     <Scale className="w-4 h-4 text-purple-600" />
                     Artículos Legales Relacionados
                   </h3>
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {clause.analysis.related_articles.map((article, index) => (
                       <div
                         key={index}
@@ -388,7 +431,7 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
           aria-modal="true"
           className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40"
         >
-          <div className="w-full max-w-md bg-white rounded-xl shadow-lg border-2 lp-gradient-border">
+          <div className="w-full max-w-md bg-white border-2 shadow-lg rounded-xl lp-gradient-border">
             <div className="flex items-center justify-between px-5 py-4 border-b">
               <h3 className="text-sm font-semibold text-gray-800">Guía de Favorabilidad</h3>
               <button
@@ -403,17 +446,17 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
               {Object.entries(favorabilityDefinitions).map(([label, definition]) => (
                 <div key={label} className="flex items-start gap-3">
                   <FavorabilityBadge label={label} />
-                  <p className="text-gray-700 leading-relaxed">{definition}</p>
+                  <p className="leading-relaxed text-gray-700">{definition}</p>
                 </div>
               ))}
-              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700">
+              <div className="p-3 mt-2 text-xs text-blue-700 border border-blue-200 rounded-lg bg-blue-50">
                 Estos niveles simplificados ayudan a priorizar revisión: Seguro (sin acción inmediata), Atención (verificar matices), Crítico (intervención recomendada).
               </div>
             </div>
-            <div className="px-5 py-3 bg-gray-50 border-t">
+            <div className="px-5 py-3 border-t bg-gray-50">
               <button
                 onClick={() => setShowFavorabilityGuide(false)}
-                className="w-full px-4 py-2 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                className="w-full px-4 py-2 text-sm font-semibold text-white rounded-lg bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300"
               >
                 Cerrar
               </button>

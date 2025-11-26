@@ -72,10 +72,10 @@ export default function ContractsPage() {
       <Protected />
       <div className="h-2 bg-primary-600" />
       <div className="container px-4 py-8 mx-auto">
-        <div className="w-full max-w-2xl px-4 py-3 mx-auto text-white rounded-t-lg bg-primary-600">
+        <div className="w-full px-4 py-3 mx-auto text-white rounded-t-lg max-w-7xl bg-primary-600">
           <h2 className="text-lg font-semibold">Contratos</h2>
         </div>
-        <div className="w-full max-w-2xl p-4 mx-auto bg-white rounded-b-lg shadow-sm">
+        <div className="w-full p-4 mx-auto bg-white rounded-b-lg shadow-sm max-w-7xl">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-gray-900">Tus contratos</h3>
             {!loading && totalCount > 0 && (

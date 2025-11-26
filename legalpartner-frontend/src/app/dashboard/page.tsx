@@ -42,7 +42,7 @@ export default function DashboardPage() {
     <div className="min-h-screen">
       <Protected />
       <div className="container px-4 py-8 mx-auto">
-        <div className="max-w-5xl mx-auto mb-6">
+        <div className="mx-auto mb-6 max-w-7xl">
           <div className="card-premium">
             <div className="flex items-center justify-between card-premium-inner">
               <div className="text-gray-900">
@@ -57,10 +57,10 @@ export default function DashboardPage() {
         </div>
 
         {!auth.isAuthenticated && (
-          <div className="max-w-4xl mx-auto text-sm text-danger-600">Inicia sesión para ver el dashboard.</div>
+          <div className="mx-auto text-sm max-w-7xl text-danger-600">Inicia sesión para ver el dashboard.</div>
         )}
         {loading && (
-          <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
+          <div className="mx-auto space-y-8 max-w-7xl animate-pulse">
             <div className="grid gap-4 md:grid-cols-4">
               <div className="p-4 rounded-xl bg-primary-100">
                 <div className="w-24 h-4 mb-2 rounded bg-white/50" />
@@ -107,10 +107,10 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
-        {error && <div className="max-w-4xl mx-auto text-danger-600">{error}</div>}
+        {error && <div className="mx-auto max-w-7xl text-danger-600">{error}</div>}
 
         {stats && (
-          <div className="max-w-4xl mx-auto space-y-8">
+          <div className="mx-auto space-y-8 max-w-7xl">
             <div className="grid gap-4 md:grid-cols-3 justify-items-center">
               <div className="w-full transition-all duration-300 ease-in-out transform border-2 card-premium border-primary-600 hover:scale-105 hover:shadow-xl">
                 <div className="card-premium-inner">

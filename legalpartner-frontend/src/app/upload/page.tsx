@@ -59,16 +59,16 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen">
       <Protected />
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-xl mx-auto space-y-6">
+      <div className="container px-4 py-12 mx-auto">
+        <div className="mx-auto space-y-6 max-w-7xl">
           {/* Upload Form */}
           <div className="card-premium">
             <div className="card-premium-inner">
               <h2 className="text-2xl font-bold text-gray-900">Muéstranos tu contrato</h2>
-              <p className="text-sm text-gray-600 mb-6">Déjanos ayudarte</p>
+              <p className="mb-6 text-sm text-gray-600">Déjanos ayudarte</p>
               <form onSubmit={onSubmit} className="space-y-4">
-                <div className="rounded-2xl p-6 text-center bg-white/90 ring-2 ring-dashed ring-primary-200">
-                  <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="p-6 text-center rounded-2xl bg-white/90 ring-2 ring-dashed ring-primary-200">
+                  <label htmlFor="file-upload" className="block mb-2 text-sm font-medium text-gray-700">
                     Selecciona tu archivo PDF
                   </label>
                   <input
@@ -87,7 +87,7 @@ export default function UploadPage() {
                     id="contract-type"
                     value={type}
                     onChange={(e) => setType(e.target.value)}
-                    className="mt-1 w-full rounded-md bg-white/90 ring-1 ring-gray-200 focus:border-primary-600 focus:ring-primary-600"
+                    className="w-full mt-1 rounded-md bg-white/90 ring-1 ring-gray-200 focus:border-primary-600 focus:ring-primary-600"
                   >
                     <option value="">Selecciona</option>
                     {CONTRACT_TYPES.map((t) => (
@@ -101,7 +101,7 @@ export default function UploadPage() {
                 <Button
                   type="submit"
                   disabled={loading || !auth.isAuthenticated}
-                  className="w-full bg-primary-600 hover:bg-primary-700 text-white shadow-sm"
+                  className="w-full text-white shadow-sm bg-primary-600 hover:bg-primary-700"
                 >
                   {loading ? "Subiendo..." : "Subir"}
                 </Button>

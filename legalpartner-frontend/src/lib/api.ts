@@ -154,19 +154,35 @@ export async function getAnalysis(id: string): Promise<ApiResponse<ContractAnaly
 }
 
 export async function getLatestDocumentAnalysis(documentId: string): Promise<ApiResponse<ContractAnalysis>> {
-  const res = await apiClient.get(`/api/contracts/analysis/document/${documentId}/latest`);
-  const responseData = res.data;
-  
-  // Si la respuesta ya tiene la estructura {success, data}, la devolvemos tal cual
-  if (responseData.success !== undefined && responseData.data !== undefined) {
-    return responseData as ApiResponse<ContractAnalysis>;
+  try {
+    const res = await apiClient.get(`/api/contracts/analysis/document/${documentId}/latest/`);
+    const responseData = res.data;
+    
+    // Si la respuesta ya tiene la estructura {success, data}, la devolvemos tal cual
+    if (responseData.success !== undefined && responseData.data !== undefined) {
+      return responseData as ApiResponse<ContractAnalysis>;
+    }
+    
+    // Si la respuesta es directamente el objeto de análisis, lo envolvemos
+    return {
+      success: true,
+      data: responseData as ContractAnalysis,
+    } as ApiResponse<ContractAnalysis>;
+  } catch (error: unknown) {
+    // Si no hay análisis (404) o cualquier otro error, devolvemos success: false
+    // Esto no es un error crítico, simplemente no hay análisis disponible
+    if ((error as { response?: { status?: number } })?.response?.status === 404) {
+      return {
+        success: false,
+        data: undefined,
+      } as ApiResponse<ContractAnalysis>;
+    }
+    // Para otros errores, también devolvemos success: false
+    return {
+      success: false,
+      data: undefined,
+    } as ApiResponse<ContractAnalysis>;
   }
-  
-  // Si la respuesta es directamente el objeto de análisis, lo envolvemos
-  return {
-    success: true,
-    data: responseData as ContractAnalysis,
-  } as ApiResponse<ContractAnalysis>;
 }
 
 export type ReanalyzeResponse = {

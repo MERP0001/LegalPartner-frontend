@@ -80,7 +80,7 @@ export default function AnalysisDetailPage() {
       <div className="min-h-screen">
         <Protected />
         <div className="container px-4 py-8 mx-auto">
-          <div className="max-w-6xl mx-auto">
+          <div className="mx-auto max-w-7xl">
             <div className="space-y-4 animate-pulse">
               <div className="w-1/3 h-8 bg-gray-200 rounded" />
               <div className="h-32 bg-gray-200 rounded" />
@@ -97,7 +97,7 @@ export default function AnalysisDetailPage() {
       <div className="min-h-screen">
         <Protected />
         <div className="container px-4 py-8 mx-auto">
-          <div className="max-w-6xl mx-auto">
+          <div className="mx-auto max-w-7xl">
             <div className="flex items-center gap-2 p-6 text-red-700 border border-red-200 rounded-lg bg-red-50">
               <XCircle className="flex-shrink-0 w-5 h-5" />
               <span>{error}</span>
@@ -113,7 +113,7 @@ export default function AnalysisDetailPage() {
       <div className="min-h-screen">
         <Protected />
         <div className="container px-4 py-8 mx-auto">
-          <div className="max-w-6xl mx-auto">
+          <div className="mx-auto max-w-7xl">
             <div className="p-6 border border-gray-200 rounded-lg bg-gray-50">
               <div className="py-8 text-center text-gray-600">
                 <p className="mb-2">Análisis no encontrado</p>
@@ -137,7 +137,7 @@ export default function AnalysisDetailPage() {
       <div className="h-2 bg-primary-600" />
       
       <div className="container px-4 py-8 mx-auto">
-        <div className="max-w-6xl mx-auto space-y-6">
+        <div className="mx-auto space-y-6 max-w-7xl">
           <button
             onClick={() => window.location.href = '/analysis'}
             className="flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-900"
@@ -319,9 +319,9 @@ export default function AnalysisDetailPage() {
 
       {selectedClause && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={() => setSelectedClause(null)}>
-          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border-4" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }} onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-y-auto border-4" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }} onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 flex items-center justify-between gap-3 p-6 bg-white border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 flex-1">Detalle de Cláusula {(data.clauses?.filter(c => c.has_analysis).findIndex(c => c.clause_id === selectedClause.clause_id) ?? -1) + 1}</h3>
+              <h3 className="flex-1 text-lg font-semibold text-gray-900">Detalle de Cláusula {(data.clauses?.filter(c => c.has_analysis).findIndex(c => c.clause_id === selectedClause.clause_id) ?? -1) + 1}</h3>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowFavorabilityGuide(true)}
@@ -368,38 +368,66 @@ export default function AnalysisDetailPage() {
                     </div>
                   </div> */}
 
-                  {selectedClause.analysis.risk_factors && selectedClause.analysis.risk_factors.length > 0 && (
-                    <div>
-                      <h4 className="mb-2 text-sm font-medium text-gray-700">Factores de Riesgo</h4>
-                      <ul className="space-y-2">
-                        {selectedClause.analysis.risk_factors.map((risk, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="mt-1 text-red-500">•</span>
-                            <span className="text-gray-900">{risk}</span>
-                          </li>
-                        ))}
-                      </ul>
+                  {/* Divider */}
+                  <div className="relative py-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full h-px bg-gradient-to-r from-transparent via-yellow-300 to-transparent"></div>
                     </div>
-                  )}
+                    <div className="relative flex justify-center">
+                      <span className="px-6 py-1 text-xs font-semibold tracking-wider text-yellow-700 uppercase bg-white border border-yellow-200 rounded-full shadow-sm">
+                        Evaluación
+                      </span>
+                    </div>
+                  </div>
 
-                  {selectedClause.analysis.recommendations && selectedClause.analysis.recommendations.length > 0 && (
-                    <div>
-                      <h4 className="mb-2 text-sm font-medium text-gray-700">Recomendaciones</h4>
-                      <ul className="space-y-2">
-                        {selectedClause.analysis.recommendations.map((rec, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="mt-1 text-blue-500">•</span>
-                            <span className="text-gray-900">{rec}</span>
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {selectedClause.analysis.risk_factors && selectedClause.analysis.risk_factors.length > 0 && (
+                      <div>
+                        <h4 className="mb-2 text-sm font-medium text-gray-700">Factores de Riesgo</h4>
+                        <ul className="space-y-2">
+                          {selectedClause.analysis.risk_factors.map((risk, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="mt-1 text-red-500">•</span>
+                              <span className="text-gray-900">{risk}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {selectedClause.analysis.recommendations && selectedClause.analysis.recommendations.length > 0 && (
+                      <div>
+                        <h4 className="mb-2 text-sm font-medium text-gray-700">Recomendaciones</h4>
+                        <ul className="space-y-2">
+                          {selectedClause.analysis.recommendations.map((rec, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="mt-1 text-blue-500">•</span>
+                              <span className="text-gray-900">{rec}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Divider */}
+                  {selectedClause.analysis.related_articles && selectedClause.analysis.related_articles.length > 0 && (
+                    <div className="relative py-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent"></div>
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="px-6 py-1 text-xs font-semibold tracking-wider text-purple-600 uppercase bg-white border border-purple-200 rounded-full shadow-sm">
+                          Referencias Legales
+                        </span>
+                      </div>
                     </div>
                   )}
 
                   {selectedClause.analysis.related_articles && selectedClause.analysis.related_articles.length > 0 && (
                     <div>
                       <h4 className="mb-2 text-sm font-medium text-gray-700">Artículos Legales Relacionados</h4>
-                      <div className="space-y-3">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {selectedClause.analysis.related_articles.map((article, idx) => (
                           <div key={idx} className="p-3 rounded-lg bg-gray-50">
                             <div className="font-medium text-gray-900">{article.law_name}</div>
@@ -433,7 +461,7 @@ export default function AnalysisDetailPage() {
           </div>
           {showFavorabilityGuide && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={() => setShowFavorabilityGuide(false)}>
-              <div className="w-full max-w-sm bg-white rounded-lg shadow-lg border-4" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }} onClick={e => e.stopPropagation()}>
+              <div className="w-full max-w-sm bg-white border-4 rounded-lg shadow-lg" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }} onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between px-4 py-3 border-b">
                   <h4 className="text-sm font-semibold text-gray-800">Guía Favorabilidad</h4>
                   <button onClick={() => setShowFavorabilityGuide(false)} className="p-1 rounded hover:bg-gray-100" aria-label="Cerrar guía">
@@ -444,10 +472,10 @@ export default function AnalysisDetailPage() {
                   {Object.entries(favorabilityDefinitions).map(([label, def]) => (
                     <div key={label} className="flex items-start gap-2">
                       <FavorabilityBadge label={label} />
-                      <p className="text-gray-700 leading-relaxed">{def}</p>
+                      <p className="leading-relaxed text-gray-700">{def}</p>
                     </div>
                   ))}
-                  <div className="p-2 mt-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded">
+                  <div className="p-2 mt-2 text-xs text-blue-700 border border-blue-200 rounded bg-blue-50">
                     Usa la favorabilidad para priorizar revisión: Seguro (sin acción), Atención (verificar), Crítico (intervenir).
                   </div>
                 </div>

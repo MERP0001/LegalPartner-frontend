@@ -23,9 +23,12 @@ export default function ContractDetailPage() {
           setDoc(res.data);
           
           // Buscar el análisis más reciente del documento usando el endpoint específico
+          // Si no hay análisis, la función devuelve success: false, lo cual es normal
           const analysisRes = await getLatestDocumentAnalysis(id);
           if (analysisRes.success && analysisRes.data) {
             setAnalysis(analysisRes.data);
+          } else {
+            setAnalysis(null);
           }
         } else {
           setError(res.message || 'Error al cargar documento');
@@ -68,27 +71,27 @@ export default function ContractDetailPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container px-4 py-8 mx-auto max-w-7xl">
         <div className="card-premium">
           <div className="card-premium-inner">
             <h2 className="text-lg font-semibold text-gray-900">Detalle de Contrato</h2>
             <p className="text-sm text-gray-600">Información del documento y acciones</p>
           </div>
         </div>
-        <div className="panel p-6 space-y-4 mt-4">
+        <div className="p-6 mt-4 space-y-4 panel">
           <div className="flex items-center justify-between">
             <div>
               <div className="text-xl font-semibold text-gray-900">{doc.original_filename}</div>
               <div className="text-sm text-gray-600">Tipo: {doc.contract_type || 'N/A'}</div>
             </div>
-            <a href={downloadUrl} className="text-primary-600" target="_blank" rel="noreferrer">Descargar</a>
+            {/* <a href={downloadUrl} className="text-primary-600" target="_blank" rel="noreferrer">Descargar</a> */}
           </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="p-4 bg-white/90 ring-1 ring-gray-100/60 rounded">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="p-4 rounded bg-white/90 ring-1 ring-gray-100/60">
               <div className="text-sm text-gray-600">Estado</div>
               <div className="font-medium">{doc.status_display || doc.document_status}</div>
             </div>
-            <div className="p-4 bg-white/90 ring-1 ring-gray-100/60 rounded">
+            <div className="p-4 rounded bg-white/90 ring-1 ring-gray-100/60">
               <div className="text-sm text-gray-600">Páginas</div>
               <div className="font-medium">{doc.page_count ?? '-'}</div>
             </div>
@@ -96,9 +99,9 @@ export default function ContractDetailPage() {
           
           {/* Texto Extraído */}
           {doc.extracted_text && (
-            <div className="p-4 bg-white/90 ring-1 ring-gray-100/60 rounded border-l-4 border-l-primary-600">
+            <div className="p-4 border-l-4 rounded bg-white/90 ring-1 ring-gray-100/60 border-l-primary-600">
               <div className="mb-2 text-sm font-medium text-gray-700">Contenido del Documento</div>
-              <div className="max-h-96 overflow-y-auto p-3 bg-gray-50 rounded text-sm text-gray-800 whitespace-pre-wrap">
+              <div className="p-3 overflow-y-auto text-sm text-gray-800 whitespace-pre-wrap rounded max-h-96 bg-gray-50">
                 {doc.extracted_text}
               </div>
             </div>
@@ -106,7 +109,7 @@ export default function ContractDetailPage() {
           
           {/* Estado del Análisis */}
           {isAnalyzed && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm font-medium text-blue-900">Estado del Análisis</div>
@@ -117,7 +120,7 @@ export default function ContractDetailPage() {
                      analysisStatus === 'failed' ? 'Fallido' : analysisStatus}
                   </div>
                 </div>
-                {(analysisStatus === 'completed' || analysisStatus === 'processed') && (
+                {(analysisStatus === 'completed' || analysisStatus === 'processed') && analysis?.analysis_id && (
                   <Button 
                     variant="outline" 
                     onClick={() => window.location.href = `/analysis/${analysis.analysis_id}`}
@@ -132,7 +135,7 @@ export default function ContractDetailPage() {
           {actionMsg && <div className={`text-sm ${actionMsg.includes('iniciado') ? 'text-secondary-700' : 'text-danger-600'}`}>{actionMsg}</div>}
           <div className="flex gap-3">
             <Button 
-              className="bg-primary-600 hover:bg-primary-700 text-white" 
+              className="text-white bg-primary-600 hover:bg-primary-700" 
               onClick={onAnalyze}
               disabled={isAnalyzing || analysisStatus === 'processing' || analysisStatus === 'queued'}
             >

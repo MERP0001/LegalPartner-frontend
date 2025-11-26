@@ -148,7 +148,7 @@ export default function AnalysisDetail({ analysis, onClauseClick }: AnalysisDeta
       {isCompleted && (
         <>
           {/* Metrics Summary */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* Total Clauses */}
             <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="flex items-center justify-between mb-2">
@@ -282,7 +282,7 @@ export default function AnalysisDetail({ analysis, onClauseClick }: AnalysisDeta
                       <h4 className="mb-2 text-sm font-semibold text-gray-700">
                         Información del Modelo IA
                       </h4>
-                      <div className="grid grid-cols-2 gap-3 text-sm md:grid-cols-3">
+                      <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3 lg:grid-cols-4">
                         {Object.entries(analysis.ai_model_info).map(([key, value]) => (
                           <div key={key}>
                             <span className="text-gray-500 capitalize">{key}:</span>
