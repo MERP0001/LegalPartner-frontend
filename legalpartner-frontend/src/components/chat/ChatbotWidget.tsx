@@ -22,11 +22,14 @@ export default function ChatbotWidget() {
 
   const send = async (q: string) => {
     if (!q || q.trim().length < 3) return;
+    // Evitar envíos concurrentes mientras hay una petición en curso
+    if (loading) return;
     setError(null);
     setInput("");
+    // Marcar loading lo antes posible para prevenir race conditions
+    setLoading(true);
     const userMsg: ChatMsg = { role: "user", content: q };
     setMessages(prev => [...prev, userMsg, { role: "assistant", content: "Escribiendo…" }]);
-    setLoading(true);
     try {
       const res = await chatbotAsk(q);
       if (res.success) {
@@ -67,7 +70,12 @@ export default function ChatbotWidget() {
               <MessageCircle className="h-5 w-5" />
               <span className="text-sm font-semibold">Chatbot Legal</span>
             </div>
-            <button onClick={() => setOpen(false)} className="text-gray-700/80 hover:text-gray-900">
+            <button
+              onClick={() => setOpen(false)}
+              className="text-gray-700/80 hover:text-gray-900"
+              aria-label="Cerrar chatbot"
+              title="Cerrar chatbot"
+            >
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -78,7 +86,9 @@ export default function ChatbotWidget() {
                 <button
                   key={s}
                   onClick={() => send(s)}
-                  className="badge-soft bg-primary-50 text-primary-700"
+                  disabled={loading}
+                  aria-disabled={loading ? 'true' : 'false'}
+                  className={`badge-soft bg-primary-50 text-primary-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {s}
                 </button>

@@ -197,8 +197,18 @@ export async function reanalyzeAnalysis(id: string): Promise<ReanalyzeResponse> 
   return res.data as ReanalyzeResponse;
 }
 
-export async function chatbotAsk(question: string, context?: Record<string, unknown>, options?: Record<string, unknown>): Promise<ApiResponse<ConsultationResponseData>> {
-  const res = await apiClient.post('/api/consultations/ask/', { question, context, options });
+export async function chatbotAsk(
+  question: string,
+  context?: Record<string, unknown>,
+  options?: Record<string, unknown>
+): Promise<ApiResponse<ConsultationResponseData>> {
+  // Esta llamada puede tardar más de lo normal (procesamiento/LLM).
+  // El cliente axios global tiene timeout=10000ms; aquí anulamos el timeout
+  // para que la petición no sea cancelada por el cliente. timeout=0 significa
+  // sin límite en axios.
+  const axiosConfig = { timeout: 0 } as Record<string, unknown>;
+
+  const res = await apiClient.post('/api/consultations/ask/', { question, context, options }, axiosConfig as any);
   return res.data as ApiResponse<ConsultationResponseData>;
 }
 
