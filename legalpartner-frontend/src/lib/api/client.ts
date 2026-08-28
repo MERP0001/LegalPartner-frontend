@@ -2,7 +2,8 @@ import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
 // En producción next.config.ts exige la variable; el fallback solo aplica en desarrollo.
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -14,14 +15,14 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use(
-  (config) => {
+  config => {
     const token = useAuthStore.getState().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error)
 );
 
 // Rutas de autenticación: un 401 aquí es una credencial incorrecta, no una sesión caducada.
@@ -42,11 +43,16 @@ async function refreshAccessToken(): Promise<string | null> {
   if (!refreshPromise) {
     // Cliente axios "limpio" para no pasar por los interceptores.
     refreshPromise = axios
-      .post<{ access: string; refresh?: string }>(`${API_BASE_URL}/api/auth/token/refresh/`, { refresh })
-      .then((res) => {
+      .post<{ access: string; refresh?: string }>(
+        `${API_BASE_URL}/api/auth/token/refresh/`,
+        { refresh }
+      )
+      .then(res => {
         const access = res.data.access;
         // ROTATE_REFRESH_TOKENS está activo en el backend: llega un refresh nuevo.
-        useAuthStore.getState().setTokens({ access, refresh: res.data.refresh ?? refresh });
+        useAuthStore
+          .getState()
+          .setTokens({ access, refresh: res.data.refresh ?? refresh });
         return access;
       })
       .catch(() => null)
@@ -67,11 +73,16 @@ function forceLogout() {
 }
 
 apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
-    const isAuthPath = AUTH_PATHS.some((p) => originalRequest?.url?.includes(p));
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthPath) {
+    const isAuthPath = AUTH_PATHS.some(p => originalRequest?.url?.includes(p));
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !isAuthPath
+    ) {
       originalRequest._retry = true;
       const access = await refreshAccessToken();
       if (access) {

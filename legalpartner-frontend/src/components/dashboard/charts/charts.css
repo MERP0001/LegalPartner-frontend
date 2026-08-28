@@ -1,10 +1,18 @@
 /* Estilos para las gráficas del dashboard */
 
 /* Colores para rangos de riesgo (leyenda) */
-.risk-range-low { background-color: #10b981; }
-.risk-range-medium-low { background-color: #84cc16; }
-.risk-range-medium-high { background-color: #f59e0b; }
-.risk-range-high { background-color: #ef4444; }
+.risk-range-low {
+  background-color: #10b981;
+}
+.risk-range-medium-low {
+  background-color: #84cc16;
+}
+.risk-range-medium-high {
+  background-color: #f59e0b;
+}
+.risk-range-high {
+  background-color: #ef4444;
+}
 
 .chart-legend-square {
   width: 12px;

@@ -12,7 +12,11 @@ export type ChatbotQueuedData = {
 /** GET /api/consultations/status/{question_id}/ */
 export type ChatbotStatusData =
   | { status: 'processing'; question_id: string; chat_id: string }
-  | (ConsultationResponseData & { status: 'completed' | 'failed'; chat_id?: string; error?: string | null });
+  | (ConsultationResponseData & {
+      status: 'completed' | 'failed';
+      chat_id?: string;
+      error?: string | null;
+    });
 
 export type ChatbotAskOptions = {
   /** chat_id para continuar el mismo hilo de conversación */
@@ -31,11 +35,17 @@ export async function chatbotAsk(
   context?: Record<string, unknown>,
   options?: Record<string, unknown>
 ): Promise<ApiResponse<ChatbotQueuedData>> {
-  const res = await apiClient.post('/api/consultations/ask/', { question, context, options });
+  const res = await apiClient.post('/api/consultations/ask/', {
+    question,
+    context,
+    options,
+  });
   return res.data as ApiResponse<ChatbotQueuedData>;
 }
 
-export async function getConsultationStatus(questionId: string): Promise<ApiResponse<ChatbotStatusData>> {
+export async function getConsultationStatus(
+  questionId: string
+): Promise<ApiResponse<ChatbotStatusData>> {
   const res = await apiClient.get(`/api/consultations/status/${questionId}/`);
   return res.data as ApiResponse<ChatbotStatusData>;
 }
@@ -55,12 +65,23 @@ const sleep = (ms: number, signal?: AbortSignal) =>
  */
 export async function askChatbotAndWait(
   question: string,
-  { chatId, context, options, intervalMs = 1500, timeoutMs = 5 * 60 * 1000, signal }: ChatbotAskOptions = {}
+  {
+    chatId,
+    context,
+    options,
+    intervalMs = 1500,
+    timeoutMs = 5 * 60 * 1000,
+    signal,
+  }: ChatbotAskOptions = {}
 ): Promise<ConsultationResponseData & { chat_id?: string }> {
   const ctx = { ...(context ?? {}), ...(chatId ? { chat_id: chatId } : {}) };
   const queued = await chatbotAsk(question, ctx, options);
   if (!queued.success || !queued.data?.question_id) {
-    throw new Error(typeof queued.message === 'string' ? queued.message : 'No se pudo enviar la consulta');
+    throw new Error(
+      typeof queued.message === 'string'
+        ? queued.message
+        : 'No se pudo enviar la consulta'
+    );
   }
 
   const deadline = Date.now() + timeoutMs;
@@ -68,15 +89,22 @@ export async function askChatbotAndWait(
     await sleep(intervalMs, signal);
     const res = await getConsultationStatus(queued.data.question_id);
     if (!res.success) {
-      throw new Error(typeof res.message === 'string' ? res.message : 'No se pudo consultar el estado');
+      throw new Error(
+        typeof res.message === 'string'
+          ? res.message
+          : 'No se pudo consultar el estado'
+      );
     }
     const data = res.data;
     if (data.status === 'processing') continue;
     if (data.status === 'failed') {
-      throw new Error(data.error || data.response || 'Error al procesar la consulta');
+      throw new Error(
+        data.error || data.response || 'Error al procesar la consulta'
+      );
     }
     return data;
   }
-  throw new Error('La consulta está tardando demasiado. Inténtalo de nuevo más tarde.');
+  throw new Error(
+    'La consulta está tardando demasiado. Inténtalo de nuevo más tarde.'
+  );
 }
-

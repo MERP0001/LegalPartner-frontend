@@ -10,7 +10,10 @@ export type LoginResponse = {
   user?: User;
 };
 
-export async function apiLogin(email: string, password: string): Promise<LoginResponse> {
+export async function apiLogin(
+  email: string,
+  password: string
+): Promise<LoginResponse> {
   const res = await apiClient.post('/api/auth/login/', { email, password });
   return res.data;
 }
@@ -36,13 +39,16 @@ export async function apiRegister(data: {
   return res.data as RegisterResponse;
 }
 
-export async function apiVerifyEmail(key: string): Promise<{ success: boolean; message?: string; email?: string }> {
+export async function apiVerifyEmail(
+  key: string
+): Promise<{ success: boolean; message?: string; email?: string }> {
   const res = await apiClient.post('/api/auth/verify-email/', { key });
   return res.data;
 }
 
-export async function apiResendVerification(email: string): Promise<{ success: boolean; message?: string }> {
+export async function apiResendVerification(
+  email: string
+): Promise<{ success: boolean; message?: string }> {
   const res = await apiClient.post('/api/auth/resend-verification/', { email });
   return res.data;
 }
-

@@ -23,13 +23,13 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
-      (set) => ({
+      set => ({
         user: null,
         token: null,
         refreshToken: null,
         isAuthenticated: false,
         hasHydrated: false,
-        setHasHydrated: (value) => set({ hasHydrated: value }),
+        setHasHydrated: value => set({ hasHydrated: value }),
         login: (tokens, user) =>
           set({
             token: tokens.access,
@@ -38,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
           }),
         // Usado por el interceptor al renovar el access token (el backend rota el refresh).
-        setTokens: (tokens) =>
+        setTokens: tokens =>
           set({ token: tokens.access, refreshToken: tokens.refresh }),
         logout: () =>
           set({
@@ -52,8 +52,8 @@ export const useAuthStore = create<AuthState>()(
         name: 'auth-storage',
         // El primer render en cliente coincide con el del servidor (sin sesión);
         // los componentes esperan a hasHydrated antes de mostrar estado de sesión.
-        onRehydrateStorage: () => (state) => state?.setHasHydrated(true),
-        partialize: (state) => ({
+        onRehydrateStorage: () => state => state?.setHasHydrated(true),
+        partialize: state => ({
           token: state.token,
           refreshToken: state.refreshToken,
           user: state.user,

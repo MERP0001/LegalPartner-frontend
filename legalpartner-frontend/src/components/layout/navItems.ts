@@ -1,4 +1,10 @@
-import { LayoutDashboard, FileText, BarChart3, UploadCloud, type LucideIcon } from 'lucide-react';
+import {
+  LayoutDashboard,
+  FileText,
+  BarChart3,
+  UploadCloud,
+  type LucideIcon,
+} from 'lucide-react';
 
 export interface NavItem {
   href: string;

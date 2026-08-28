@@ -38,21 +38,35 @@ function flatten(value: unknown): string {
 export function getErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== 'object') return fallback;
   const p = payload as ApiErrorPayload;
-  return flatten(p.error) || flatten(p.errors) || flatten(p.message) || flatten(p.detail) || fallback;
+  return (
+    flatten(p.error) ||
+    flatten(p.errors) ||
+    flatten(p.message) ||
+    flatten(p.detail) ||
+    fallback
+  );
 }
 
 /** Cuerpo JSON de la respuesta de error de axios, si existe. */
 export function getApiErrorData(err: unknown): ApiErrorPayload | null {
-  if (axios.isAxiosError(err) && err.response?.data && typeof err.response.data === 'object') {
+  if (
+    axios.isAxiosError(err) &&
+    err.response?.data &&
+    typeof err.response.data === 'object'
+  ) {
     return err.response.data as ApiErrorPayload;
   }
   return null;
 }
 
 /** Mensaje legible a partir de una excepción lanzada por axios. */
-export function getApiErrorMessage(err: unknown, fallback = 'Error de servidor'): string {
+export function getApiErrorMessage(
+  err: unknown,
+  fallback = 'Error de servidor'
+): string {
   if (axios.isAxiosError(err)) {
-    if (err.code === 'ECONNABORTED') return 'La petición tardó demasiado. Inténtalo de nuevo.';
+    if (err.code === 'ECONNABORTED')
+      return 'La petición tardó demasiado. Inténtalo de nuevo.';
     if (!err.response) return 'No se pudo conectar con el servidor.';
     const fromBody = getErrorMessage(err.response.data, '');
     if (fromBody) return fromBody;

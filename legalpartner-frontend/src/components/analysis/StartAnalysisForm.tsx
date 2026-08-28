@@ -1,10 +1,23 @@
-"use client";
+'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { listDocuments, startAnalysis, getAnalysisProgress, type AnalysisProgressData, getApiErrorMessage, getErrorMessage } from '@/lib/api';
+import {
+  listDocuments,
+  startAnalysis,
+  getAnalysisProgress,
+  type AnalysisProgressData,
+  getApiErrorMessage,
+  getErrorMessage,
+} from '@/lib/api';
 import { Button } from '@/components/common/Button';
 import type { Document, ContractType } from '@/types';
-import { FileText, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import {
+  FileText,
+  Loader2,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+} from 'lucide-react';
 import { CONTRACT_TYPE_OPTIONS, getContractTypeLabel } from '@/lib/labels';
 
 const PROGRESS_POLL_INTERVAL_MS = 3000;
@@ -22,12 +35,16 @@ export default function StartAnalysisForm({
 }: StartAnalysisFormProps) {
   const router = useRouter();
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [selectedDocumentId, setSelectedDocumentId] = useState<string>(preSelectedDocumentId || '');
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string>(
+    preSelectedDocumentId || ''
+  );
   const [contractType, setContractType] = useState<ContractType | ''>('');
   const [loading, setLoading] = useState(false);
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(
+    null
+  );
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState<AnalysisProgressData | null>(null);
@@ -44,7 +61,9 @@ export default function StartAnalysisForm({
         if (res.success && res.data) {
           setProgress(res.data);
           if (res.data.state === 'SUCCESS') {
-            onAnalysisComplete?.(res.data.result?.analysis_id || currentAnalysisId);
+            onAnalysisComplete?.(
+              res.data.result?.analysis_id || currentAnalysisId
+            );
             return;
           }
           if (res.data.state === 'FAILURE') {
@@ -98,7 +117,7 @@ export default function StartAnalysisForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedDocumentId) {
       setError('Por favor selecciona un documento');
       return;
@@ -135,40 +154,48 @@ export default function StartAnalysisForm({
   };
 
   return (
-    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-      <div className="flex items-center gap-2 mb-4">
-        <FileText className="w-5 h-5 text-primary-600" />
-        <h3 className="text-lg font-semibold text-gray-900">Iniciar Análisis de Contrato</h3>
+    <div className='p-6 bg-white border border-gray-200 rounded-lg shadow-sm'>
+      <div className='flex items-center gap-2 mb-4'>
+        <FileText className='w-5 h-5 text-primary-600' />
+        <h3 className='text-lg font-semibold text-gray-900'>
+          Iniciar Análisis de Contrato
+        </h3>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className='space-y-4'>
         {/* Document Selector */}
         <div>
-          <label htmlFor="document" className="block mb-1 text-sm font-medium text-gray-700">
+          <label
+            htmlFor='document'
+            className='block mb-1 text-sm font-medium text-gray-700'
+          >
             Documento a analizar
           </label>
           {loadingDocs ? (
-            <div className="flex items-center gap-2 py-2 text-sm text-gray-500">
-              <Loader2 className="w-4 h-4 animate-spin" />
+            <div className='flex items-center gap-2 py-2 text-sm text-gray-500'>
+              <Loader2 className='w-4 h-4 animate-spin' />
               Cargando documentos...
             </div>
           ) : documents.length === 0 ? (
-            <div className="py-2 text-sm text-gray-500">
+            <div className='py-2 text-sm text-gray-500'>
               No hay documentos procesados disponibles
             </div>
           ) : (
             <select
-              id="document"
+              id='document'
               value={selectedDocumentId}
-              onChange={(e) => setSelectedDocumentId(e.target.value)}
+              onChange={e => setSelectedDocumentId(e.target.value)}
               disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed'
               required
             >
-              <option value="">Selecciona un documento</option>
-              {documents.map((doc) => (
+              <option value=''>Selecciona un documento</option>
+              {documents.map(doc => (
                 <option key={doc.document_id} value={doc.document_id}>
-                  {doc.original_filename} ({doc.contract_type_display || getContractTypeLabel(doc.contract_type, 'Sin tipo')})
+                  {doc.original_filename} (
+                  {doc.contract_type_display ||
+                    getContractTypeLabel(doc.contract_type, 'Sin tipo')}
+                  )
                 </option>
               ))}
             </select>
@@ -177,57 +204,79 @@ export default function StartAnalysisForm({
 
         {/* Contract Type Selector */}
         <div>
-          <label htmlFor="contractType" className="block mb-1 text-sm font-medium text-gray-700">
+          <label
+            htmlFor='contractType'
+            className='block mb-1 text-sm font-medium text-gray-700'
+          >
             Tipo de contrato
           </label>
           <select
-            id="contractType"
+            id='contractType'
             value={contractType}
-            onChange={(e) => setContractType(e.target.value as ContractType | '')}
+            onChange={e => setContractType(e.target.value as ContractType | '')}
             disabled={loading}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed'
           >
-            <option value="">General</option>
-            {CONTRACT_TYPE_OPTIONS.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
+            <option value=''>General</option>
+            {CONTRACT_TYPE_OPTIONS.map(t => (
+              <option key={t.value} value={t.value}>
+                {t.label}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="flex items-center gap-2 p-3 border border-red-200 rounded-lg bg-red-50">
-            <XCircle className="flex-shrink-0 w-5 h-5 text-red-600" />
-            <p className="text-sm text-red-700">{error}</p>
+          <div className='flex items-center gap-2 p-3 border border-red-200 rounded-lg bg-red-50'>
+            <XCircle className='flex-shrink-0 w-5 h-5 text-red-600' />
+            <p className='text-sm text-red-700'>{error}</p>
           </div>
         )}
 
         {/* Success Message with Analysis Details */}
         {currentAnalysisId && !error && (
-          <div className="p-4 border border-green-300 rounded-lg bg-green-50">
-            <div className="flex items-start gap-3">
-              <CheckCircle className="flex-shrink-0 w-5 h-5 text-green-600 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-semibold text-green-900">✓ Análisis iniciado correctamente</p>
-                <p className="text-sm text-green-800 mt-2">
+          <div className='p-4 border border-green-300 rounded-lg bg-green-50'>
+            <div className='flex items-start gap-3'>
+              <CheckCircle className='flex-shrink-0 w-5 h-5 text-green-600 mt-0.5' />
+              <div className='flex-1'>
+                <p className='font-semibold text-green-900'>
+                  ✓ Análisis iniciado correctamente
+                </p>
+                <p className='text-sm text-green-800 mt-2'>
                   <strong>ID del Análisis:</strong> {currentAnalysisId}
                 </p>
                 {currentTaskId && (
-                  <p className="text-sm text-green-800">
+                  <p className='text-sm text-green-800'>
                     <strong>ID de Tarea:</strong> {currentTaskId}
                   </p>
                 )}
-                <p className="text-xs text-green-700 mt-2">
-                  El análisis se está procesando. Esto puede tardar entre 1-5 minutos.
+                <p className='text-xs text-green-700 mt-2'>
+                  El análisis se está procesando. Esto puede tardar entre 1-5
+                  minutos.
                 </p>
                 {progress && (
-                  <div className="mt-3 space-y-1" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.progress}>
-                    <div className="flex items-center justify-between text-xs text-green-800">
-                      <span>{progress.stage}{progress.description ? ` · ${progress.description}` : ''}</span>
-                      <span className="font-medium">{progress.progress}%</span>
+                  <div
+                    className='mt-3 space-y-1'
+                    role='progressbar'
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={progress.progress}
+                  >
+                    <div className='flex items-center justify-between text-xs text-green-800'>
+                      <span>
+                        {progress.stage}
+                        {progress.description
+                          ? ` · ${progress.description}`
+                          : ''}
+                      </span>
+                      <span className='font-medium'>{progress.progress}%</span>
                     </div>
-                    <div className="w-full h-2 overflow-hidden bg-green-200 rounded-full">
-                      <div className="h-full transition-all duration-500 bg-green-600" style={{ width: `${progress.progress}%` }} />
+                    <div className='w-full h-2 overflow-hidden bg-green-200 rounded-full'>
+                      <div
+                        className='h-full transition-all duration-500 bg-green-600'
+                        style={{ width: `${progress.progress}%` }}
+                      />
                     </div>
                   </div>
                 )}
@@ -237,21 +286,23 @@ export default function StartAnalysisForm({
         )}
 
         {successMessage && !error && !currentAnalysisId && (
-          <div className="flex items-center gap-2 p-3 border border-green-200 rounded-lg bg-green-50">
-            <CheckCircle className="flex-shrink-0 w-5 h-5 text-green-600" />
-            <p className="text-sm text-green-700">{successMessage}</p>
+          <div className='flex items-center gap-2 p-3 border border-green-200 rounded-lg bg-green-50'>
+            <CheckCircle className='flex-shrink-0 w-5 h-5 text-green-600' />
+            <p className='text-sm text-green-700'>{successMessage}</p>
           </div>
         )}
 
         {/* Info Message */}
         {!loading && (
-          <div className="flex items-start gap-2 p-3 border border-blue-200 rounded-lg bg-blue-50">
-            <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-blue-700">
-              <p className="font-medium">El análisis puede tardar entre 1-5 minutos</p>
-              <p className="mt-1 text-xs">
-                El progreso se actualizará automáticamente. Puedes cerrar esta pantalla y revisar
-                el estado en la sección de Análisis.
+          <div className='flex items-start gap-2 p-3 border border-blue-200 rounded-lg bg-blue-50'>
+            <AlertCircle className='h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5' />
+            <div className='text-sm text-blue-700'>
+              <p className='font-medium'>
+                El análisis puede tardar entre 1-5 minutos
+              </p>
+              <p className='mt-1 text-xs'>
+                El progreso se actualizará automáticamente. Puedes cerrar esta
+                pantalla y revisar el estado en la sección de Análisis.
               </p>
             </div>
           </div>
@@ -259,13 +310,18 @@ export default function StartAnalysisForm({
 
         {/* Submit Button */}
         <Button
-          type="submit"
-          disabled={loading || loadingDocs || documents.length === 0 || (!!currentTaskId && !error && progress?.state !== 'SUCCESS')}
-          className="w-full text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          type='submit'
+          disabled={
+            loading ||
+            loadingDocs ||
+            documents.length === 0 ||
+            (!!currentTaskId && !error && progress?.state !== 'SUCCESS')
+          }
+          className='w-full text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed'
         >
           {loading ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className='w-4 h-4 mr-2 animate-spin' />
               Iniciando...
             </>
           ) : (
@@ -276,9 +332,9 @@ export default function StartAnalysisForm({
         {/* View Analysis Button (shown after completion) */}
         {currentAnalysisId && (
           <Button
-            type="button"
+            type='button'
             onClick={() => router.push(`/analysis/${currentAnalysisId}`)}
-            className="w-full text-white bg-green-600 hover:bg-green-700"
+            className='w-full text-white bg-green-600 hover:bg-green-700'
           >
             Ver Resultados del Análisis
           </Button>

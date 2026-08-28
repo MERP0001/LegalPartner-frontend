@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { getAnalysis, getApiErrorMessage, getErrorMessage } from '@/lib/api';
 import type { ContractAnalysis } from '@/types';
-import { isAnalysisCompleted, isAnalysisFailed, isAnalysisInProgress } from '@/lib/labels';
+import {
+  isAnalysisCompleted,
+  isAnalysisFailed,
+  isAnalysisInProgress,
+} from '@/lib/labels';
 
 interface UseAnalysisPollingOptions {
   analysisId: string | null;
@@ -39,12 +43,12 @@ export function useAnalysisPolling({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const initialFetchDoneRef = useRef(false);
   const hasLoadedRef = useRef(false);
-  
+
   // Use refs to store callbacks to avoid recreating fetchAnalysis
   const onCompleteRef = useRef(onComplete);
   const onFailedRef = useRef(onFailed);
   const onProgressRef = useRef(onProgress);
-  
+
   // Update refs when callbacks change
   useEffect(() => {
     onCompleteRef.current = onComplete;
@@ -72,9 +76,9 @@ export function useAnalysisPolling({
       // Solo la primera carga muestra el estado "loading"; los sondeos son silenciosos
       if (!hasLoadedRef.current) setLoading(true);
       setError(null);
-      
+
       const res = await getAnalysis(analysisId);
-      
+
       if (res.success && res.data) {
         hasLoadedRef.current = true;
         setAnalysis(res.data);
@@ -83,7 +87,7 @@ export function useAnalysisPolling({
         if (isAnalysisCompleted(res.data.analysis_state)) {
           stopPolling();
           onCompleteRef.current?.(res.data);
-        } 
+        }
         // Check if analysis failed
         else if (isAnalysisFailed(res.data.analysis_state)) {
           stopPolling();
@@ -111,7 +115,7 @@ export function useAnalysisPolling({
       initialFetchDoneRef.current = true;
       fetchAnalysis();
     }
-    
+
     // Reset cuando cambia analysisId
     if (!analysisId) {
       initialFetchDoneRef.current = false;

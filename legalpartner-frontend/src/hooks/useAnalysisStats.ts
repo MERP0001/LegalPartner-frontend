@@ -57,7 +57,8 @@ export function useAnalysisStats(analyses: ContractAnalysis[]): AnalysisStats {
     }
 
     const riskScores = validAnalyses.map(a => a.risk_score || 0);
-    const averageRisk = riskScores.reduce((a, b) => a + b, 0) / riskScores.length;
+    const averageRisk =
+      riskScores.reduce((a, b) => a + b, 0) / riskScores.length;
     const highestRisk = Math.max(...riskScores);
     const lowestRisk = Math.min(...riskScores);
 

@@ -33,25 +33,43 @@ export function useChatbot() {
     async (raw: string) => {
       const q = raw.trim();
       if (q.length < CHATBOT_MIN_QUESTION_LENGTH) {
-        setError(`La pregunta debe tener al menos ${CHATBOT_MIN_QUESTION_LENGTH} caracteres`);
+        setError(
+          `La pregunta debe tener al menos ${CHATBOT_MIN_QUESTION_LENGTH} caracteres`
+        );
         return;
       }
       if (loading) return;
       setError(null);
       setInput('');
       setLoading(true);
-      setMessages((prev) => [...prev, { role: 'user', content: q }, { role: 'assistant', content: 'Escribiendo…', pending: true }]);
+      setMessages(prev => [
+        ...prev,
+        { role: 'user', content: q },
+        { role: 'assistant', content: 'Escribiendo…', pending: true },
+      ]);
       const controller = new AbortController();
       abortRef.current = controller;
       try {
-        const data = await askChatbotAndWait(q, { chatId: chatIdRef.current, signal: controller.signal });
+        const data = await askChatbotAndWait(q, {
+          chatId: chatIdRef.current,
+          signal: controller.signal,
+        });
         if (data.chat_id) chatIdRef.current = data.chat_id;
-        setMessages((prev) => [...prev.slice(0, -1), { role: 'assistant', content: data.response, meta: data }]);
+        setMessages(prev => [
+          ...prev.slice(0, -1),
+          { role: 'assistant', content: data.response, meta: data },
+        ]);
       } catch (err) {
         if (controller.signal.aborted) return;
-        const msg = err instanceof Error && !('isAxiosError' in err) ? err.message : getApiErrorMessage(err, 'Error al contactar el chatbot');
+        const msg =
+          err instanceof Error && !('isAxiosError' in err)
+            ? err.message
+            : getApiErrorMessage(err, 'Error al contactar el chatbot');
         setError(msg);
-        setMessages((prev) => [...prev.slice(0, -1), { role: 'assistant', content: 'No pude procesar la consulta.' }]);
+        setMessages(prev => [
+          ...prev.slice(0, -1),
+          { role: 'assistant', content: 'No pude procesar la consulta.' },
+        ]);
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }

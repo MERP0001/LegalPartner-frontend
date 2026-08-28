@@ -15,7 +15,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'LegalPartner - Análisis Inteligente de Contratos',
   description: 'Plataforma de análisis inteligente de contratos legales con IA',
-  keywords: ['legal', 'contratos', 'análisis', 'inteligencia artificial', 'derecho'],
+  keywords: [
+    'legal',
+    'contratos',
+    'análisis',
+    'inteligencia artificial',
+    'derecho',
+  ],
 };
 
 export default function RootLayout({
@@ -33,7 +39,9 @@ export default function RootLayout({
                 <div className='w-8 h-8 rounded-lg bg-white/15 ring-1 ring-white/30 flex items-center justify-center'>
                   <span className='text-white font-bold'>LP</span>
                 </div>
-                <span className='text-lg font-semibold text-white'>LegalPartner</span>
+                <span className='text-lg font-semibold text-white'>
+                  LegalPartner
+                </span>
               </div>
               <div className='flex items-center gap-3'>
                 <AuthNav />

@@ -1,18 +1,22 @@
-"use client"
-import Link from 'next/link'
-import { useAuthStore } from '@/store/authStore'
-import { useLogout } from '@/hooks/useLogout'
+'use client';
+import Link from 'next/link';
+import { useAuthStore } from '@/store/authStore';
+import { useLogout } from '@/hooks/useLogout';
 
 export default function AuthNav() {
-  const auth = useAuthStore()
-  const logout = useLogout()
+  const auth = useAuthStore();
+  const logout = useLogout();
   if (!auth.hasHydrated || !auth.isAuthenticated) {
     return (
       <div className='flex items-center gap-4'>
-        <Link href='/auth/login' className='text-white/90 hover:text-white'>Iniciar sesión</Link>
-        <Link href='/auth/register' className='text-white/90 hover:text-white'>Registrarse</Link>
+        <Link href='/auth/login' className='text-white/90 hover:text-white'>
+          Iniciar sesión
+        </Link>
+        <Link href='/auth/register' className='text-white/90 hover:text-white'>
+          Registrarse
+        </Link>
       </div>
-    )
+    );
   }
   return (
     <div className='flex items-center gap-3'>
@@ -23,5 +27,5 @@ export default function AuthNav() {
         Cerrar sesión
       </button>
     </div>
-  )
+  );
 }

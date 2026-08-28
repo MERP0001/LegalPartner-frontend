@@ -1,16 +1,16 @@
-"use client"
-import { useState } from 'react'
-import Link from 'next/link'
-import { useAuthStore } from '@/store/authStore'
-import { useLogout } from '@/hooks/useLogout'
-import { NAV_ITEMS } from './navItems'
-import { Menu, X, LogOut } from 'lucide-react'
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import { useAuthStore } from '@/store/authStore';
+import { useLogout } from '@/hooks/useLogout';
+import { NAV_ITEMS } from './navItems';
+import { Menu, X, LogOut } from 'lucide-react';
 
 export default function MobileSidebar() {
-  const [open, setOpen] = useState(false)
-  const auth = useAuthStore()
-  const logout = useLogout()
-  if (!auth.hasHydrated || !auth.isAuthenticated) return null
+  const [open, setOpen] = useState(false);
+  const auth = useAuthStore();
+  const logout = useLogout();
+  if (!auth.hasHydrated || !auth.isAuthenticated) return null;
 
   return (
     <div className='md:hidden'>
@@ -20,13 +20,24 @@ export default function MobileSidebar() {
         onClick={() => setOpen(true)}
         className='p-2 rounded-lg bg-white/15 ring-1 ring-white/30 text-white hover:bg-white/20 transition'
       >
-        <Menu className='w-5 h-5 transition-transform duration-200 hover:scale-110' aria-hidden='true' />
+        <Menu
+          className='w-5 h-5 transition-transform duration-200 hover:scale-110'
+          aria-hidden='true'
+        />
       </button>
 
       {open && (
         <div className='fixed inset-0 z-50'>
-          <div className='absolute inset-0 bg-black/40' onClick={() => setOpen(false)} />
-          <div className='absolute left-0 top-0 h-full w-72 bg-gradient-to-b from-danger-600 via-danger-700 to-danger-800 text-white shadow-2xl flex flex-col' role='dialog' aria-modal='true' aria-label='Menú'>
+          <div
+            className='absolute inset-0 bg-black/40'
+            onClick={() => setOpen(false)}
+          />
+          <div
+            className='absolute left-0 top-0 h-full w-72 bg-gradient-to-b from-danger-600 via-danger-700 to-danger-800 text-white shadow-2xl flex flex-col'
+            role='dialog'
+            aria-modal='true'
+            aria-label='Menú'
+          >
             <div className='px-4 py-4 border-b border-white/20 flex items-center justify-between'>
               <div className='flex items-center gap-2'>
                 <div className='w-9 h-9 rounded-lg bg-white/15 ring-1 ring-white/30 flex items-center justify-center'>
@@ -34,14 +45,29 @@ export default function MobileSidebar() {
                 </div>
                 <span className='text-lg font-semibold'>LegalPartner</span>
               </div>
-              <button aria-label='Cerrar menú' onClick={() => setOpen(false)} className='p-2 hover:bg-white/10 rounded'>
+              <button
+                aria-label='Cerrar menú'
+                onClick={() => setOpen(false)}
+                className='p-2 hover:bg-white/10 rounded'
+              >
                 <X className='w-5 h-5' aria-hidden='true' />
               </button>
             </div>
-            <nav className='flex-1 px-2 py-4 space-y-1' aria-label='Navegación principal'>
+            <nav
+              className='flex-1 px-2 py-4 space-y-1'
+              aria-label='Navegación principal'
+            >
               {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={href} className='group flex items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition duration-200' onClick={() => setOpen(false)}>
-                  <Icon className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1' aria-hidden='true' />
+                <Link
+                  key={href}
+                  href={href}
+                  className='group flex items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition duration-200'
+                  onClick={() => setOpen(false)}
+                >
+                  <Icon
+                    className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1'
+                    aria-hidden='true'
+                  />
                   <span>{label}</span>
                 </Link>
               ))}
@@ -51,7 +77,10 @@ export default function MobileSidebar() {
                 onClick={logout}
                 className='group flex w-full items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition duration-200'
               >
-                <LogOut className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1' aria-hidden='true' />
+                <LogOut
+                  className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1'
+                  aria-hidden='true'
+                />
                 <span>Cerrar sesión</span>
               </button>
             </div>
@@ -59,5 +88,5 @@ export default function MobileSidebar() {
         </div>
       )}
     </div>
-  )
+  );
 }

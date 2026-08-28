@@ -6,10 +6,12 @@
   html {
     font-family: Inter, sans-serif;
   }
-  
+
   body {
     font-family: inherit;
-    background-image: radial-gradient(1200px 600px at 0% 0%, #E6EEF7 0%, #ffffff 65%), linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    background-image:
+      radial-gradient(1200px 600px at 0% 0%, #e6eef7 0%, #ffffff 65%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     background-attachment: fixed;
     color: #1f2937;
   }
@@ -35,6 +37,6 @@
   .lp-gradient-border {
     border-style: solid;
     border-color: transparent;
-    border-image: linear-gradient(to right, #002D62, #ef4444) 1;
+    border-image: linear-gradient(to right, #002d62, #ef4444) 1;
   }
 }

@@ -21,7 +21,12 @@ export interface Document {
 }
 
 export type DocumentStatus = 'uploaded' | 'processing' | 'processed' | 'failed';
-export type ContractType = 'rent' | 'mortgage' | 'services' | 'employment' | 'transfers';
+export type ContractType =
+  | 'rent'
+  | 'mortgage'
+  | 'services'
+  | 'employment'
+  | 'transfers';
 
 // Analysis Types
 export interface ContractAnalysis {
@@ -60,7 +65,12 @@ export interface ContractAnalysis {
 }
 
 export type AnalysisState = 'queued' | 'processing' | 'processed' | 'failed';
-export type FavorabilityLevel = 'very_unfavorable' | 'unfavorable' | 'neutral' | 'favorable' | 'very_favorable';
+export type FavorabilityLevel =
+  | 'very_unfavorable'
+  | 'unfavorable'
+  | 'neutral'
+  | 'favorable'
+  | 'very_favorable';
 
 export interface ContractClause {
   clause_id: string;

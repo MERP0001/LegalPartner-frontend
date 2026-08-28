@@ -9,12 +9,17 @@ export const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {
   transfers: 'Transferencias',
 };
 
-export const CONTRACT_TYPE_OPTIONS = (Object.keys(CONTRACT_TYPE_LABELS) as ContractType[]).map((value) => ({
+export const CONTRACT_TYPE_OPTIONS = (
+  Object.keys(CONTRACT_TYPE_LABELS) as ContractType[]
+).map(value => ({
   value,
   label: CONTRACT_TYPE_LABELS[value],
 }));
 
-export function getContractTypeLabel(type?: string | null, fallback = 'General'): string {
+export function getContractTypeLabel(
+  type?: string | null,
+  fallback = 'General'
+): string {
   return (type && CONTRACT_TYPE_LABELS[type as ContractType]) || fallback;
 }
 
@@ -27,11 +32,15 @@ export const ANALYSIS_STATE_LABELS: Record<AnalysisState, string> = {
 };
 
 export function getAnalysisStateLabel(state?: string | null): string {
-  return (state && ANALYSIS_STATE_LABELS[state as AnalysisState]) || state || '';
+  return (
+    (state && ANALYSIS_STATE_LABELS[state as AnalysisState]) || state || ''
+  );
 }
 
-export const isAnalysisCompleted = (state?: string | null) => state === 'processed';
-export const isAnalysisInProgress = (state?: string | null) => state === 'queued' || state === 'processing';
+export const isAnalysisCompleted = (state?: string | null) =>
+  state === 'processed';
+export const isAnalysisInProgress = (state?: string | null) =>
+  state === 'queued' || state === 'processing';
 export const isAnalysisFailed = (state?: string | null) => state === 'failed';
 
 /**
@@ -49,5 +58,7 @@ const FAVORABILITY_LABELS: Record<FavorabilityLevel, FavorabilityLabel> = {
 };
 
 export function getFavorabilityLabel(level?: string | null): string {
-  return (level && FAVORABILITY_LABELS[level as FavorabilityLevel]) || level || 'N/A';
+  return (
+    (level && FAVORABILITY_LABELS[level as FavorabilityLevel]) || level || 'N/A'
+  );
 }

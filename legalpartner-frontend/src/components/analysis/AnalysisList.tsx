@@ -1,11 +1,24 @@
-"use client";
+'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { listAnalyses, getApiErrorMessage, getErrorMessage } from '@/lib/api';
 import { formatDateTime } from '@/lib/utils';
 import type { ContractAnalysis, AnalysisState, ContractType } from '@/types';
-import { ANALYSIS_STATE_LABELS, CONTRACT_TYPE_OPTIONS, getAnalysisStateLabel, getContractTypeLabel, isAnalysisInProgress } from '@/lib/labels';
-import { Filter, FileText, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
+import {
+  ANALYSIS_STATE_LABELS,
+  CONTRACT_TYPE_OPTIONS,
+  getAnalysisStateLabel,
+  getContractTypeLabel,
+  isAnalysisInProgress,
+} from '@/lib/labels';
+import {
+  Filter,
+  FileText,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  XCircle,
+} from 'lucide-react';
 import Pagination from '@/components/common/Pagination';
 
 interface AnalysisListProps {
@@ -24,12 +37,12 @@ function getStatusBadgeClass(status: AnalysisState): string {
 
 function getStatusIcon(status: AnalysisState) {
   const icons: Record<AnalysisState, React.ReactNode> = {
-    queued: <Clock className="w-4 h-4" />,
-    processing: <Clock className="w-4 h-4 animate-spin" />,
-    processed: <CheckCircle className="w-4 h-4" />,
-    failed: <XCircle className="w-4 h-4" />,
+    queued: <Clock className='w-4 h-4' />,
+    processing: <Clock className='w-4 h-4 animate-spin' />,
+    processed: <CheckCircle className='w-4 h-4' />,
+    failed: <XCircle className='w-4 h-4' />,
   };
-  return icons[status] || <Clock className="w-4 h-4" />;
+  return icons[status] || <Clock className='w-4 h-4' />;
 }
 
 export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
@@ -37,12 +50,12 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
   const [analyses, setAnalyses] = useState<ContractAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filters
   const [statusFilter, setStatusFilter] = useState<AnalysisState | ''>('');
   const [typeFilter, setTypeFilter] = useState<ContractType | ''>('');
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -96,7 +109,7 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
   // Debounced search
   useEffect(() => {
     if (!searchTerm) return;
-    
+
     const timer = setTimeout(() => {
       setCurrentPage(1);
     }, 500);
@@ -115,68 +128,83 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {/* Filters Section */}
-      <div className="p-4 bg-white border-4 rounded-xl shadow-sm lp-gradient-border">
-        <div className="flex items-center gap-2 mb-3">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Filtros</h3>
+      <div className='p-4 bg-white border-4 rounded-xl shadow-sm lp-gradient-border'>
+        <div className='flex items-center gap-2 mb-3'>
+          <Filter className='w-5 h-5 text-gray-600' />
+          <h3 className='font-semibold text-gray-900'>Filtros</h3>
         </div>
-        
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
           {/* Search */}
           <div>
-            <label htmlFor="search" className="block mb-1 text-sm font-medium text-gray-700">
+            <label
+              htmlFor='search'
+              className='block mb-1 text-sm font-medium text-gray-700'
+            >
               Buscar
             </label>
             <input
-              id="search"
-              type="text"
-              placeholder="Buscar por nombre..."
+              id='search'
+              type='text'
+              placeholder='Buscar por nombre...'
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              onChange={e => setSearchTerm(e.target.value)}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500'
             />
           </div>
 
           {/* Status Filter */}
           <div>
-            <label htmlFor="status-filter" className="block mb-1 text-sm font-medium text-gray-700">
+            <label
+              htmlFor='status-filter'
+              className='block mb-1 text-sm font-medium text-gray-700'
+            >
               Estado
             </label>
             <select
-              id="status-filter"
+              id='status-filter'
               value={statusFilter}
-              onChange={(e) => {
+              onChange={e => {
                 setStatusFilter(e.target.value as AnalysisState | '');
                 setCurrentPage(1);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500'
             >
-              <option value="">Todos los estados</option>
-              {(Object.keys(ANALYSIS_STATE_LABELS) as AnalysisState[]).map((s) => (
-                <option key={s} value={s}>{ANALYSIS_STATE_LABELS[s]}</option>
-              ))}
+              <option value=''>Todos los estados</option>
+              {(Object.keys(ANALYSIS_STATE_LABELS) as AnalysisState[]).map(
+                s => (
+                  <option key={s} value={s}>
+                    {ANALYSIS_STATE_LABELS[s]}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
           {/* Type Filter */}
           <div>
-            <label htmlFor="type-filter" className="block mb-1 text-sm font-medium text-gray-700">
+            <label
+              htmlFor='type-filter'
+              className='block mb-1 text-sm font-medium text-gray-700'
+            >
               Tipo de contrato
             </label>
             <select
-              id="type-filter"
+              id='type-filter'
               value={typeFilter}
-              onChange={(e) => {
+              onChange={e => {
                 setTypeFilter(e.target.value as ContractType | '');
                 setCurrentPage(1);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500'
             >
-              <option value="">Todos los tipos</option>
-              {CONTRACT_TYPE_OPTIONS.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
+              <option value=''>Todos los tipos</option>
+              {CONTRACT_TYPE_OPTIONS.map(t => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
               ))}
             </select>
           </div>
@@ -185,22 +213,25 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
 
       {/* Results Count */}
       {!loading && (
-        <div className="text-sm text-gray-600">
+        <div className='text-sm text-gray-600'>
           Mostrando {analyses.length} de {totalCount} análisis
         </div>
       )}
 
       {/* Loading State */}
       {loading && (
-        <div className="space-y-3 animate-pulse">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="p-4 bg-white border border-gray-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 space-y-2">
-                  <div className="w-3/4 h-4 bg-gray-200 rounded" />
-                  <div className="w-1/2 h-3 bg-gray-200 rounded" />
+        <div className='space-y-3 animate-pulse'>
+          {[0, 1, 2, 3].map(i => (
+            <div
+              key={i}
+              className='p-4 bg-white border border-gray-200 rounded-lg'
+            >
+              <div className='flex items-center justify-between'>
+                <div className='flex-1 space-y-2'>
+                  <div className='w-3/4 h-4 bg-gray-200 rounded' />
+                  <div className='w-1/2 h-3 bg-gray-200 rounded' />
                 </div>
-                <div className="w-24 h-6 bg-gray-200 rounded-full" />
+                <div className='w-24 h-6 bg-gray-200 rounded-full' />
               </div>
             </div>
           ))}
@@ -209,22 +240,22 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
 
       {/* Error State */}
       {error && (
-        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-          <div className="flex items-center gap-2 text-red-700">
-            <AlertTriangle className="w-5 h-5" />
-            <p className="font-medium">{error}</p>
+        <div className='p-4 border border-red-200 rounded-lg bg-red-50'>
+          <div className='flex items-center gap-2 text-red-700'>
+            <AlertTriangle className='w-5 h-5' />
+            <p className='font-medium'>{error}</p>
           </div>
         </div>
       )}
 
       {/* Empty State */}
       {!loading && !error && analyses.length === 0 && (
-        <div className="p-8 text-center bg-white border border-gray-200 rounded-lg">
-          <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-          <h3 className="mb-1 text-lg font-semibold text-gray-900">
+        <div className='p-8 text-center bg-white border border-gray-200 rounded-lg'>
+          <FileText className='w-12 h-12 mx-auto mb-3 text-gray-400' />
+          <h3 className='mb-1 text-lg font-semibold text-gray-900'>
             No hay análisis
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className='text-sm text-gray-600'>
             {statusFilter || typeFilter || searchTerm
               ? 'No se encontraron análisis con los filtros aplicados'
               : 'Comienza subiendo y analizando tu primer contrato'}
@@ -234,53 +265,61 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
 
       {/* Analysis List */}
       {!loading && !error && analyses.length > 0 && (
-        <div className="space-y-3">
+        <div className='space-y-3'>
           {analyses.map((analysis, index) => (
             <div
               key={analysis.analysis_id}
-              role="link"
+              role='link'
               tabIndex={0}
               onClick={() => handleAnalysisClick(analysis.analysis_id)}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.click(); } }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  e.currentTarget.click();
+                }
+              }}
               className={`p-4 transition-all duration-300 ease-in-out border-2 rounded-lg cursor-pointer transform hover:scale-105 hover:shadow-xl group ${
-                index % 2 === 0 
-                  ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50' 
+                index % 2 === 0
+                  ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50'
                   : 'border-danger-500 hover:border-danger-600 hover:bg-red-50'
               }`}
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className='flex items-start justify-between gap-4'>
                 {/* Left Side - Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FileText className="flex-shrink-0 w-5 h-5 text-primary-600" />
-                    <h4 className="font-semibold text-gray-900 truncate transition-colors group-hover:text-primary-600">
-                      {analysis.document_name || 
-                       analysis.document_filename || 
-                       (typeof analysis.document !== 'string' ? analysis.document.original_filename : 'Documento')}
+                <div className='flex-1 min-w-0'>
+                  <div className='flex items-center gap-2 mb-2'>
+                    <FileText className='flex-shrink-0 w-5 h-5 text-primary-600' />
+                    <h4 className='font-semibold text-gray-900 truncate transition-colors group-hover:text-primary-600'>
+                      {analysis.document_name ||
+                        analysis.document_filename ||
+                        (typeof analysis.document !== 'string'
+                          ? analysis.document.original_filename
+                          : 'Documento')}
                     </h4>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
+                  <div className='grid grid-cols-2 gap-3 text-sm md:grid-cols-4'>
                     <div>
-                      <span className="text-gray-500">Cláusulas:</span>
-                      <span className="ml-1 font-medium text-gray-900">
+                      <span className='text-gray-500'>Cláusulas:</span>
+                      <span className='ml-1 font-medium text-gray-900'>
                         {analysis.total_clauses || 0}
                       </span>
                     </div>
-                    {analysis.average_favorability !== undefined && analysis.average_favorability !== null && (
-                      <div>
-                        <span className="text-gray-500">Favorabilidad:</span>
-                        <span className="ml-1 font-medium text-green-600">
-                          {analysis.average_favorability.toFixed(1)}/10
-                        </span>
-                      </div>
-                    )}
+                    {analysis.average_favorability !== undefined &&
+                      analysis.average_favorability !== null && (
+                        <div>
+                          <span className='text-gray-500'>Favorabilidad:</span>
+                          <span className='ml-1 font-medium text-green-600'>
+                            {analysis.average_favorability.toFixed(1)}/10
+                          </span>
+                        </div>
+                      )}
                   </div>
 
-                  <div className="mt-2 text-xs text-gray-500">
+                  <div className='mt-2 text-xs text-gray-500'>
                     {formatDateTime(analysis.created_at)}
                     {analysis.completed_at && (
-                      <span className="ml-2">
+                      <span className='ml-2'>
                         • Completado: {formatDateTime(analysis.completed_at)}
                       </span>
                     )}
@@ -288,36 +327,45 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
                 </div>
 
                 {/* Right Side - Status */}
-                <div className="flex flex-col items-end gap-2">
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5 ${getStatusBadgeClass(analysis.analysis_state)}`}>
+                <div className='flex flex-col items-end gap-2'>
+                  <div
+                    className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5 ${getStatusBadgeClass(analysis.analysis_state)}`}
+                  >
                     {getStatusIcon(analysis.analysis_state)}
-                    <span className="capitalize">{getAnalysisStateLabel(analysis.analysis_state)}</span>
+                    <span className='capitalize'>
+                      {getAnalysisStateLabel(analysis.analysis_state)}
+                    </span>
                   </div>
-                  
+
                   {analysis.contract_type && (
-                    <div className="px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded">
-                      {getContractTypeLabel(analysis.contract_type, analysis.contract_type)}
+                    <div className='px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded'>
+                      {getContractTypeLabel(
+                        analysis.contract_type,
+                        analysis.contract_type
+                      )}
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Progress Bar for Processing */}
-              {isAnalysisInProgress(analysis.analysis_state) && 
-               analysis.progress_percentage !== undefined && (
-                <div className="pt-3 mt-3 border-t border-gray-200">
-                  <div className="flex items-center justify-between mb-1 text-xs text-gray-600">
-                    <span>{analysis.current_step || 'Procesando...'}</span>
-                    <span className="font-medium">{analysis.progress_percentage}%</span>
+              {isAnalysisInProgress(analysis.analysis_state) &&
+                analysis.progress_percentage !== undefined && (
+                  <div className='pt-3 mt-3 border-t border-gray-200'>
+                    <div className='flex items-center justify-between mb-1 text-xs text-gray-600'>
+                      <span>{analysis.current_step || 'Procesando...'}</span>
+                      <span className='font-medium'>
+                        {analysis.progress_percentage}%
+                      </span>
+                    </div>
+                    <div className='w-full bg-gray-200 rounded-full h-1.5'>
+                      <div
+                        className='h-full transition-all duration-300 rounded-full bg-primary-600'
+                        style={{ width: `${analysis.progress_percentage}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
-                    <div
-                      className="h-full transition-all duration-300 rounded-full bg-primary-600"
-                      style={{ width: `${analysis.progress_percentage}%` }}
-                    />
-                  </div>
-                </div>
-              )}
+                )}
             </div>
           ))}
         </div>

@@ -7,6 +7,7 @@ Frontend de la aplicación LegalPartner - Plataforma de análisis inteligente de
 ## 🚀 Stack Tecnológico
 
 ### Framework y Herramientas
+
 - **Next.js 16** con App Router
 - **TypeScript** para tipado estático
 - **Tailwind CSS** para estilos
@@ -17,6 +18,7 @@ Frontend de la aplicación LegalPartner - Plataforma de análisis inteligente de
 - **Class Variance Authority** para variantes de componentes
 
 ### Herramientas de Desarrollo
+
 - **ESLint** para linting
 - **Prettier** para formateo de código
 - **PostCSS + Autoprefixer** para compatibilidad CSS
@@ -83,16 +85,19 @@ En producción la variable es obligatoria: `next build` falla si no está defini
 ## 🏃‍♂️ Inicio Rápido
 
 1. **Instalar dependencias**
+
    ```bash
    npm install
    ```
 
 2. **Configurar variables de entorno**
+
    ```bash
    cp .env.example .env.local
    ```
 
 3. **Iniciar desarrollo**
+
    ```bash
    npm run dev
    ```
@@ -105,6 +110,7 @@ En producción la variable es obligatoria: `next build` falla si no está defini
 ## 📋 Progreso de Desarrollo
 
 ### ✅ Fase 1 - Configuración Base (COMPLETADA)
+
 - [x] Proyecto Next.js con TypeScript
 - [x] Configuración de Tailwind CSS con paleta personalizada
 - [x] Estructura de carpetas organizada
@@ -118,6 +124,7 @@ En producción la variable es obligatoria: `next build` falla si no está defini
 ### 🔄 Siguientes Fases
 
 #### Fase 2 - Sistema de Autenticación
+
 - [ ] Páginas de login/register
 - [ ] Componentes de formularios
 - [ ] Hooks de autenticación
@@ -125,6 +132,7 @@ En producción la variable es obligatoria: `next build` falla si no está defini
 - [ ] Manejo de tokens JWT
 
 #### Fase 3 - Layout Principal
+
 - [ ] Navbar responsive
 - [ ] Sidebar opcional
 - [ ] Footer
