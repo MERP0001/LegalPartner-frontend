@@ -153,7 +153,10 @@ export async function getAnalysis(id: string): Promise<ApiResponse<ContractAnaly
   } as ApiResponse<ContractAnalysis>;
 }
 
-export async function getLatestDocumentAnalysis(documentId: string): Promise<ApiResponse<ContractAnalysis>> {
+// Devuelve data undefined cuando el documento aún no tiene análisis (404) o falla la petición.
+export type LatestAnalysisResponse = { success: boolean; data?: ContractAnalysis };
+
+export async function getLatestDocumentAnalysis(documentId: string): Promise<LatestAnalysisResponse> {
   try {
     const res = await apiClient.get(`/api/contracts/analysis/document/${documentId}/latest/`);
     const responseData = res.data;
@@ -172,16 +175,10 @@ export async function getLatestDocumentAnalysis(documentId: string): Promise<Api
     // Si no hay análisis (404) o cualquier otro error, devolvemos success: false
     // Esto no es un error crítico, simplemente no hay análisis disponible
     if ((error as { response?: { status?: number } })?.response?.status === 404) {
-      return {
-        success: false,
-        data: undefined,
-      } as ApiResponse<ContractAnalysis>;
+      return { success: false };
     }
     // Para otros errores, también devolvemos success: false
-    return {
-      success: false,
-      data: undefined,
-    } as ApiResponse<ContractAnalysis>;
+    return { success: false };
   }
 }
 
