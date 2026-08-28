@@ -4,6 +4,7 @@ import type {
   User, 
   ApiResponse, 
   Document, 
+  DocumentStatus,
   DocumentStats, 
   ContractAnalysis, 
   Consultation, 
@@ -164,6 +165,23 @@ export async function uploadDocument(
 export async function getDocument(id: string): Promise<ApiResponse<Document>> {
   const res = await apiClient.get(`/api/documents/${id}/`);
   return res.data as ApiResponse<Document>;
+}
+
+/** GET /api/documents/{id}/ocr_status/ — los campos vienen en el nivel raíz, no bajo data. */
+export type OcrStatusResponse = {
+  success: boolean;
+  document_id?: string;
+  current_status?: DocumentStatus;
+  has_extracted_text?: boolean;
+  page_count?: number | null;
+  ocr_confidence?: number | null;
+  processing_time_seconds?: number | null;
+  error?: unknown;
+};
+
+export async function getOcrStatus(id: string): Promise<OcrStatusResponse> {
+  const res = await apiClient.get(`/api/documents/${id}/ocr_status/`);
+  return res.data as OcrStatusResponse;
 }
 
 export function getDocumentDownloadUrl(id: string): string {

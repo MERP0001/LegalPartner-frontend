@@ -1,12 +1,16 @@
 "use client";
-import { useState } from "react";
-import { uploadDocument } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { uploadDocument, getOcrStatus } from "@/lib/api";
 import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/store/authStore";
 import Protected from "@/components/layout/Protected";
 import StartAnalysisForm from "@/components/analysis/StartAnalysisForm";
-import type { Document } from "@/types";
+import type { Document, DocumentStatus } from "@/types";
+import { Loader2 } from "lucide-react";
+
+const OCR_POLL_INTERVAL_MS = 2000;
 
 const CONTRACT_TYPES = [
   { value: "employment", label: "Trabajo" },
@@ -22,12 +26,37 @@ export default function UploadPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [uploadedDocument, setUploadedDocument] = useState<Document | null>(null);
+  // Estado OCR del documento subido; el análisis solo puede iniciarse cuando está "processed"
+  const [ocrStatus, setOcrStatus] = useState<DocumentStatus | null>(null);
   const auth = useAuthStore();
+  const router = useRouter();
+
+  // Sondear GET /documents/{id}/ocr_status/ hasta que el OCR termine o falle
+  useEffect(() => {
+    if (!uploadedDocument) return;
+    if (ocrStatus === "processed" || ocrStatus === "failed") return;
+    let cancelled = false;
+    const check = async () => {
+      try {
+        const res = await getOcrStatus(uploadedDocument.document_id);
+        if (!cancelled && res.success && res.current_status) setOcrStatus(res.current_status);
+      } catch {
+        // Error transitorio de red: se reintenta en el siguiente tick
+      }
+    };
+    check();
+    const timer = setInterval(check, OCR_POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [uploadedDocument, ocrStatus]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus(null);
     setUploadedDocument(null);
+    setOcrStatus(null);
     if (!file) {
       setStatus("Selecciona un archivo");
       return;
@@ -38,6 +67,7 @@ export default function UploadPage() {
       if (res?.success && res.data) {
         setStatus(res?.message || "Documento subido exitosamente");
         setUploadedDocument(res.data);
+        setOcrStatus(res.data.document_status);
         setFile(null);
         setType("");
       } else {
@@ -106,18 +136,24 @@ export default function UploadPage() {
             </div>
           </div>
 
-          {/* Start Analysis Form - shown after successful upload */}
-          {uploadedDocument && (
+          {/* Estado del OCR del documento recién subido */}
+          {uploadedDocument && ocrStatus !== "processed" && ocrStatus !== "failed" && (
+            <div className="flex items-center gap-2 p-4 text-sm text-blue-700 border border-blue-200 rounded-lg bg-blue-50" role="status">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Extrayendo el texto del documento (OCR)… El análisis estará disponible en cuanto termine.
+            </div>
+          )}
+          {uploadedDocument && ocrStatus === "failed" && (
+            <div className="p-4 text-sm border rounded-lg text-danger-600 border-danger-200 bg-danger-50" role="alert">
+              El procesamiento OCR del documento falló. Intenta subirlo de nuevo o usa otro PDF.
+            </div>
+          )}
+
+          {/* Start Analysis Form - solo cuando el documento ya está procesado */}
+          {uploadedDocument && ocrStatus === "processed" && (
             <StartAnalysisForm
               preSelectedDocumentId={uploadedDocument.document_id}
-              onAnalysisComplete={() => {
-                // Mostrar mensaje y redirigir al dashboard
-                alert('El análisis estará completado en varios minutos. Podrás verlo en tu panel de análisis.');
-                window.location.href = '/dashboard';
-              }}
-              onAnalysisFailed={(error) => {
-                console.error('Analysis failed:', error);
-              }}
+              onAnalysisComplete={(analysisId) => router.push(`/analysis/${analysisId}`)}
             />
           )}
         </div>
