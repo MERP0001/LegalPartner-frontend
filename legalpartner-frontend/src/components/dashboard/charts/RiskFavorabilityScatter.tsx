@@ -1,6 +1,7 @@
 "use client";
 import { useAnalysisStats } from '@/hooks/useAnalysisStats';
 import type { ContractAnalysis } from '@/types';
+import { isAnalysisCompleted } from '@/lib/labels';
 import { TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import './charts.css';
 
@@ -13,11 +14,7 @@ export default function RiskFavorabilityScatter({
   analyses,
 }: RiskFavorabilityScatterProps) {
   // Filtrar análisis completados
-  const completedAnalyses = analyses.filter(
-    (analysis) =>
-      analysis.analysis_state === 'completed' ||
-      analysis.analysis_state === 'processed'
-  );
+  const completedAnalyses = analyses.filter((analysis) => isAnalysisCompleted(analysis.analysis_state));
 
   const stats = useAnalysisStats(completedAnalyses);
 

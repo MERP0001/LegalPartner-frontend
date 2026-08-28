@@ -71,6 +71,8 @@ async function refreshAccessToken(): Promise<string | null> {
 function forceLogout() {
   useAuthStore.getState().logout();
   if (typeof window !== 'undefined') {
+    // Fuera del árbol de React no hay router; una recarga completa además limpia estado en memoria.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.href = '/auth/login';
   }
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { getAnalysis } from '@/lib/api';
 import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import type { ContractAnalysis } from '@/types';
+import { isAnalysisCompleted, isAnalysisFailed, isAnalysisInProgress } from '@/lib/labels';
 
 interface UseAnalysisPollingOptions {
   analysisId: string | null;
@@ -80,17 +81,17 @@ export function useAnalysisPolling({
         setAnalysis(res.data);
 
         // Check if analysis is completed
-        if (res.data.analysis_state === 'processed' || res.data.analysis_state === 'completed') {
+        if (isAnalysisCompleted(res.data.analysis_state)) {
           stopPolling();
           onCompleteRef.current?.(res.data);
         } 
         // Check if analysis failed
-        else if (res.data.analysis_state === 'failed') {
+        else if (isAnalysisFailed(res.data.analysis_state)) {
           stopPolling();
           onFailedRef.current?.(res.data);
         }
         // Analysis is in progress
-        else if (res.data.analysis_state === 'processing' || res.data.analysis_state === 'queued') {
+        else if (isAnalysisInProgress(res.data.analysis_state)) {
           if (autoPoll) setIsPolling(true);
           onProgressRef.current?.(res.data);
         }

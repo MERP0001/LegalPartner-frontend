@@ -6,6 +6,7 @@ import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import { Button } from '@/components/common/Button';
 import type { Document, ContractType } from '@/types';
 import { FileText, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { CONTRACT_TYPE_OPTIONS, getContractTypeLabel } from '@/lib/labels';
 
 const PROGRESS_POLL_INTERVAL_MS = 3000;
 
@@ -168,7 +169,7 @@ export default function StartAnalysisForm({
               <option value="">Selecciona un documento</option>
               {documents.map((doc) => (
                 <option key={doc.document_id} value={doc.document_id}>
-                  {doc.original_filename} ({doc.contract_type_display || 'Sin tipo'})
+                  {doc.original_filename} ({doc.contract_type_display || getContractTypeLabel(doc.contract_type, 'Sin tipo')})
                 </option>
               ))}
             </select>
@@ -188,11 +189,9 @@ export default function StartAnalysisForm({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
             <option value="">General</option>
-            <option value="rent">Arrendamiento</option>
-            <option value="mortgage">Hipoteca</option>
-            <option value="services">Servicios</option>
-            <option value="employment">Empleo</option>
-            <option value="transfers">Transferencias</option>
+            {CONTRACT_TYPE_OPTIONS.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
           </select>
         </div>
 

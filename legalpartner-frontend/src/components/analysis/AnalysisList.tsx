@@ -5,6 +5,7 @@ import { listAnalyses } from '@/lib/api';
 import { formatDateTime } from '@/lib/utils';
 import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import type { ContractAnalysis, AnalysisState, ContractType } from '@/types';
+import { ANALYSIS_STATE_LABELS, CONTRACT_TYPE_OPTIONS, getAnalysisStateLabel, getContractTypeLabel, isAnalysisInProgress } from '@/lib/labels';
 import { Filter, ChevronLeft, ChevronRight, FileText, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
 
 interface AnalysisListProps {
@@ -12,23 +13,21 @@ interface AnalysisListProps {
 }
 
 function getStatusBadgeClass(status: AnalysisState): string {
-  const classes = {
-    'queued': 'bg-gray-100 text-gray-700',
-    'processing': 'bg-yellow-100 text-yellow-700',
-    'processed': 'bg-green-100 text-green-700',
-    'completed': 'bg-green-100 text-green-700',
-    'failed': 'bg-red-100 text-red-700',
+  const classes: Record<AnalysisState, string> = {
+    queued: 'bg-gray-100 text-gray-700',
+    processing: 'bg-yellow-100 text-yellow-700',
+    processed: 'bg-green-100 text-green-700',
+    failed: 'bg-red-100 text-red-700',
   };
   return classes[status] || 'bg-gray-100 text-gray-700';
 }
 
 function getStatusIcon(status: AnalysisState) {
-  const icons = {
-    'queued': <Clock className="w-4 h-4" />,
-    'processing': <Clock className="w-4 h-4 animate-spin" />,
-    'processed': <CheckCircle className="w-4 h-4" />,
-    'completed': <CheckCircle className="w-4 h-4" />,
-    'failed': <XCircle className="w-4 h-4" />,
+  const icons: Record<AnalysisState, React.ReactNode> = {
+    queued: <Clock className="w-4 h-4" />,
+    processing: <Clock className="w-4 h-4 animate-spin" />,
+    processed: <CheckCircle className="w-4 h-4" />,
+    failed: <XCircle className="w-4 h-4" />,
   };
   return icons[status] || <Clock className="w-4 h-4" />;
 }
@@ -155,11 +154,9 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">Todos los estados</option>
-              <option value="queued">En cola</option>
-              <option value="processing">Procesando</option>
-              <option value="processed">Completado</option>
-              <option value="completed">Completado</option>
-              <option value="failed">Fallido</option>
+              {(Object.keys(ANALYSIS_STATE_LABELS) as AnalysisState[]).map((s) => (
+                <option key={s} value={s}>{ANALYSIS_STATE_LABELS[s]}</option>
+              ))}
             </select>
           </div>
 
@@ -178,11 +175,9 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">Todos los tipos</option>
-              <option value="rent">Arrendamiento</option>
-              <option value="mortgage">Hipoteca</option>
-              <option value="services">Servicios</option>
-              <option value="employment">Empleo</option>
-              <option value="transfers">Transferencias</option>
+              {CONTRACT_TYPE_OPTIONS.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -293,28 +288,19 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
                 <div className="flex flex-col items-end gap-2">
                   <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5 ${getStatusBadgeClass(analysis.analysis_state)}`}>
                     {getStatusIcon(analysis.analysis_state)}
-                    <span className="capitalize">
-                      {analysis.analysis_state === 'queued' ? 'En cola' :
-                       analysis.analysis_state === 'processing' ? 'Procesando' :
-                       analysis.analysis_state === 'processed' || analysis.analysis_state === 'completed' ? 'Completado' :
-                       analysis.analysis_state === 'failed' ? 'Fallido' : analysis.analysis_state}
-                    </span>
+                    <span className="capitalize">{getAnalysisStateLabel(analysis.analysis_state)}</span>
                   </div>
                   
                   {analysis.contract_type && (
                     <div className="px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded">
-                      {analysis.contract_type === 'rent' ? 'Arrendamiento' :
-                       analysis.contract_type === 'mortgage' ? 'Hipoteca' :
-                       analysis.contract_type === 'services' ? 'Servicios' :
-                       analysis.contract_type === 'employment' ? 'Empleo' :
-                       analysis.contract_type === 'transfers' ? 'Transferencias' : analysis.contract_type}
+                      {getContractTypeLabel(analysis.contract_type, analysis.contract_type)}
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Progress Bar for Processing */}
-              {(analysis.analysis_state === 'processing' || analysis.analysis_state === 'queued') && 
+              {isAnalysisInProgress(analysis.analysis_state) && 
                analysis.progress_percentage !== undefined && (
                 <div className="pt-3 mt-3 border-t border-gray-200">
                   <div className="flex items-center justify-between mb-1 text-xs text-gray-600">

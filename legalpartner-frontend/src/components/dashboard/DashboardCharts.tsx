@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { listAnalyses } from "@/lib/api";
 import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { ContractAnalysis } from "@/types";
+import { isAnalysisCompleted } from "@/lib/labels";
 import { RiskFavorabilityScatter, RiskDistributionChart } from "@/components/dashboard/charts";
 
 interface DashboardChartsProps {
@@ -81,9 +82,7 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
     );
   }
 
-  const completedAnalyses = analyses.filter(analysis => 
-    analysis.analysis_state === 'completed' || analysis.analysis_state === 'processed'
-  );
+  const completedAnalyses = analyses.filter((analysis) => isAnalysisCompleted(analysis.analysis_state));
 
   if (completedAnalyses.length === 0) {
     return (

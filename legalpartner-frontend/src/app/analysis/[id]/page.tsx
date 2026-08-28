@@ -7,17 +7,7 @@ import Protected from "@/components/layout/Protected";
 import { ArrowLeft, FileText, Loader2, XCircle, AlertCircle } from "lucide-react";
 import FavorabilityBadge from "@/components/common/FavorabilityBadge";
 import { favorabilityDefinitions } from "@/lib/favorabilityDefinitions";
-
-function getFavorabilityLabel(level: string): string {
-  const labels: Record<string, string> = {
-    'very_favorable': 'Seguro',
-    'favorable': 'Seguro',
-    'neutral': 'Atención',
-    'unfavorable': 'Crítico',
-    'very_unfavorable': 'Crítico',
-  };
-  return labels[level] || level;
-}
+import { getAnalysisStateLabel, getFavorabilityLabel, isAnalysisCompleted, isAnalysisFailed, isAnalysisInProgress } from "@/lib/labels";
 
 export default function AnalysisDetailPage() {
   const params = useParams();
@@ -85,9 +75,9 @@ export default function AnalysisDetailPage() {
     );
   }
 
-  const isProcessing = data.analysis_state === 'processing' || data.analysis_state === 'queued';
-  const isCompleted = data.analysis_state === 'processed' || data.analysis_state === 'completed';
-  const isFailed = data.analysis_state === 'failed';
+  const isProcessing = isAnalysisInProgress(data.analysis_state);
+  const isCompleted = isAnalysisCompleted(data.analysis_state);
+  const isFailed = isAnalysisFailed(data.analysis_state);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -121,10 +111,7 @@ export default function AnalysisDetailPage() {
                   isProcessing ? 'bg-yellow-100 text-yellow-800' :
                   isFailed ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                 }`}>
-                  {data.analysis_state === 'queued' ? 'En cola' :
-                   data.analysis_state === 'processing' ? 'Procesando' :
-                   data.analysis_state === 'processed' || data.analysis_state === 'completed' ? 'Completado' :
-                   data.analysis_state === 'failed' ? 'Fallido' : data.analysis_state}
+                  {getAnalysisStateLabel(data.analysis_state)}
                 </span>
               </div>
             </div>

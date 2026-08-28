@@ -9,16 +9,10 @@ import Protected from "@/components/layout/Protected";
 import StartAnalysisForm from "@/components/analysis/StartAnalysisForm";
 import type { Document, DocumentStatus } from "@/types";
 import { Loader2 } from "lucide-react";
+import { CONTRACT_TYPE_OPTIONS } from "@/lib/labels";
 
 const OCR_POLL_INTERVAL_MS = 2000;
 
-const CONTRACT_TYPES = [
-  { value: "employment", label: "Trabajo" },
-  { value: "rent", label: "Alquiler" },
-  { value: "services", label: "Servicios" },
-  { value: "mortgage", label: "Hipoteca" },
-  { value: "transfers", label: "Transferencias" },
-];
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -114,7 +108,7 @@ export default function UploadPage() {
                     className="w-full mt-1 rounded-md bg-white/90 ring-1 ring-gray-200 focus:border-primary-600 focus:ring-primary-600"
                   >
                     <option value="">Selecciona</option>
-                    {CONTRACT_TYPES.map((t) => (
+                    {CONTRACT_TYPE_OPTIONS.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
                   </select>

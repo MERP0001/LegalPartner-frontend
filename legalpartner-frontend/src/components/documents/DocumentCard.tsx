@@ -1,5 +1,6 @@
 import { Document } from '@/types';
 import { FileText, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
+import { getContractTypeLabel } from '@/lib/labels';
 
 function badgeColor(type?: string) {
   switch (type) {
@@ -38,7 +39,6 @@ function statusBadge(status: string) {
 }
 
 export default function DocumentCard({ doc }: { doc: Document }) {
-  const label = doc.contract_type ? doc.contract_type : 'Contrato';
   const StatusIcon = statusBadge(doc.document_status).icon;
   return (
     <div className="group card-premium">
@@ -55,13 +55,7 @@ export default function DocumentCard({ doc }: { doc: Document }) {
           </div>
           <div className="flex items-center gap-2">
             <div className={`badge-soft ${badgeColor(doc.contract_type)}`}>
-              {
-                label === 'rent' ? 'Alquiler' :
-                label === 'employment' ? 'Trabajo' :
-                label === 'services' ? 'Servicios' :
-                label === 'mortgage' ? 'Hipoteca' :
-                label === 'transfers' ? 'Transferencias' : 'Contrato'
-              }
+              {getContractTypeLabel(doc.contract_type, 'Contrato')}
             </div>
             <div className={`badge-soft flex items-center gap-1 ${statusBadge(doc.document_status).class}`}>
               <StatusIcon className="w-3.5 h-3.5" />
@@ -72,7 +66,7 @@ export default function DocumentCard({ doc }: { doc: Document }) {
         <div className="mt-4 grid grid-cols-3 gap-3">
           <div className="rounded-lg bg-gray-50 px-3 py-2">
             <div className="text-[11px] text-gray-500">Tipo</div>
-            <div className="text-sm font-medium text-gray-900">{doc.contract_type || 'General'}</div>
+            <div className="text-sm font-medium text-gray-900">{getContractTypeLabel(doc.contract_type)}</div>
           </div>
           <div className="rounded-lg bg-gray-50 px-3 py-2">
             <div className="text-[11px] text-gray-500">Páginas</div>

@@ -59,7 +59,7 @@ export interface ContractAnalysis {
   error_message?: string;
 }
 
-export type AnalysisState = 'queued' | 'processing' | 'processed' | 'completed' | 'failed';
+export type AnalysisState = 'queued' | 'processing' | 'processed' | 'failed';
 export type FavorabilityLevel = 'very_unfavorable' | 'unfavorable' | 'neutral' | 'favorable' | 'very_favorable';
 
 export interface ContractClause {

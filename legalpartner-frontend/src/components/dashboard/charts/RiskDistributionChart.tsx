@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Info } from 'lucide-react';
 import type { ContractAnalysis } from '@/types';
+import { isAnalysisCompleted } from '@/lib/labels';
 import './charts.css';
 import RiskLevelHelp from './RiskLevelHelp';
 
@@ -95,7 +96,7 @@ export default function RiskDistributionChart({ analyses }: RiskDistributionChar
   // Filtrar análisis completados con puntuación de riesgo
   const completedAnalyses = analyses.filter(
     (analysis) =>
-      (analysis.analysis_state === 'completed' || analysis.analysis_state === 'processed') &&
+      isAnalysisCompleted(analysis.analysis_state) &&
       analysis.risk_score !== undefined &&
       analysis.risk_score !== null
   );

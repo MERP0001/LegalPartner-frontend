@@ -6,6 +6,7 @@ import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { Document, ContractAnalysis } from "@/types";
 import { Button } from "@/components/common/Button";
 import Protected from "@/components/layout/Protected";
+import { getAnalysisStateLabel, getContractTypeLabel, isAnalysisCompleted, isAnalysisInProgress } from "@/lib/labels";
 
 export default function ContractDetailPage() {
   const params = useParams();
@@ -86,7 +87,7 @@ export default function ContractDetailPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-xl font-semibold text-gray-900">{doc.original_filename}</div>
-              <div className="text-sm text-gray-600">Tipo: {doc.contract_type || 'N/A'}</div>
+              <div className="text-sm text-gray-600">Tipo: {getContractTypeLabel(doc.contract_type, 'N/A')}</div>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -116,14 +117,9 @@ export default function ContractDetailPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm font-medium text-blue-900">Estado del Análisis</div>
-                  <div className="text-sm text-blue-700">
-                    {analysisStatus === 'completed' || analysisStatus === 'processed' ? 'Completado' :
-                     analysisStatus === 'processing' ? 'Procesando...' :
-                     analysisStatus === 'queued' ? 'En cola' :
-                     analysisStatus === 'failed' ? 'Fallido' : analysisStatus}
-                  </div>
+                  <div className="text-sm text-blue-700">{getAnalysisStateLabel(analysisStatus)}</div>
                 </div>
-                {(analysisStatus === 'completed' || analysisStatus === 'processed') && analysis?.analysis_id && (
+                {isAnalysisCompleted(analysisStatus) && analysis?.analysis_id && (
                   <Button 
                     variant="outline" 
                     onClick={() => router.push(`/analysis/${analysis.analysis_id}`)}
@@ -140,7 +136,7 @@ export default function ContractDetailPage() {
             <Button 
               className="text-white bg-primary-600 hover:bg-primary-700" 
               onClick={onAnalyze}
-              disabled={isAnalyzing || analysisStatus === 'processing' || analysisStatus === 'queued'}
+              disabled={isAnalyzing || isAnalysisInProgress(analysisStatus)}
             >
               {isAnalyzing ? 'Iniciando...' : isAnalyzed ? 'Re-analizar' : 'Analizar'}
             </Button>
