@@ -1,9 +1,11 @@
 "use client"
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 
 export default function AuthNav() {
   const auth = useAuthStore()
+  const router = useRouter()
   if (!auth.isAuthenticated) {
     return (
       <div className='flex items-center gap-4'>
@@ -20,7 +22,7 @@ export default function AuthNav() {
       <button
         onClick={() => {
           auth.logout();
-          if (typeof window !== 'undefined') window.location.href = '/';
+          router.push('/');
         }}
         className='text-white/90 hover:text-white'
       >

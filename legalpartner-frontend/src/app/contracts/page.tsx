@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { listDocuments } from "@/lib/api";
 import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { Document } from "@/types";
@@ -14,6 +15,7 @@ export default function ContractsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const auth = useAuthStore();
+  const router = useRouter();
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -115,7 +117,7 @@ export default function ContractsPage() {
               <div className="mb-1 text-lg font-semibold">No tienes contratos aún</div>
               <div className="text-sm">Sube tu primer contrato para comenzar el análisis</div>
               <div className="mt-4">
-                <Button className="text-white shadow-sm bg-primary-600 hover:bg-primary-700" onClick={() => (window.location.href = '/upload')}>Subir contrato</Button>
+                <Button className="text-white shadow-sm bg-primary-600 hover:bg-primary-700" onClick={() => router.push('/upload')}>Subir contrato</Button>
               </div>
             </div>
           )}
@@ -123,7 +125,7 @@ export default function ContractsPage() {
             {docs.map((d, index) => (
               <div 
                 key={d.document_id} 
-                onClick={() => (window.location.href = `/contracts/${d.document_id}`)} 
+                onClick={() => router.push(`/contracts/${d.document_id}`)} 
                 className={`cursor-pointer transition-all duration-300 ease-in-out border-2 rounded-lg p-3 transform hover:scale-105 hover:shadow-xl ${
                   index % 2 === 0 
                     ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50' 

@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getStats } from "@/lib/api";
 import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { DocumentStats } from "@/types";
@@ -16,10 +17,12 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"documents" | "analytics">("documents");
   const auth = useAuthStore();
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
       if (!auth.isAuthenticated) { setLoading(false); return; }
+      setLoading(true);
+      setError(null);
       try {
         const res = await getStats();
         if (res.success && res.data) {
@@ -32,9 +35,11 @@ export default function DashboardPage() {
       } finally {
         setLoading(false);
       }
-    };
-    fetchStats();
   }, [auth.isAuthenticated]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const processed = stats?.documents_by_status?.processed || stats?.documents_by_status?.PROCESSED || 0;
   const processing = stats?.documents_by_status?.processing || stats?.documents_by_status?.PROCESSING || 0;
@@ -51,7 +56,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-600">Resumen de actividad y documentos</p>
               </div>
               <div>
-                <Button variant="outline" onClick={() => window.location.reload()}>Refrescar</Button>
+                <Button variant="outline" onClick={fetchStats} disabled={loading}>Refrescar</Button>
               </div>
             </div>
           </div>
@@ -195,7 +200,7 @@ export default function DashboardPage() {
                       {stats.recent_uploads.map((d, index) => (
                         <div 
                           key={d.document_id} 
-                          onClick={() => (window.location.href = `/contracts/${d.document_id}`)} 
+                          onClick={() => router.push(`/contracts/${d.document_id}`)} 
                           className={`cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl border-2 rounded-lg p-3 ${
                             index % 2 === 0 
                               ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50' 

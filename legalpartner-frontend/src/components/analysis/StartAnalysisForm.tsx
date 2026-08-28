@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { listDocuments, startAnalysis, getAnalysisProgress, type AnalysisProgressData } from '@/lib/api';
 import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import { Button } from '@/components/common/Button';
@@ -19,6 +20,7 @@ export default function StartAnalysisForm({
   onAnalysisComplete,
   onAnalysisFailed,
 }: StartAnalysisFormProps) {
+  const router = useRouter();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>(preSelectedDocumentId || '');
   const [contractType, setContractType] = useState<ContractType | ''>('');
@@ -277,7 +279,7 @@ export default function StartAnalysisForm({
         {currentAnalysisId && (
           <Button
             type="button"
-            onClick={() => window.location.href = `/analysis/${currentAnalysisId}`}
+            onClick={() => router.push(`/analysis/${currentAnalysisId}`)}
             className="w-full text-white bg-green-600 hover:bg-green-700"
           >
             Ver Resultados del Análisis

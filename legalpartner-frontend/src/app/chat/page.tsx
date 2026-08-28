@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { useChatbot } from "@/hooks/useChatbot";
 import { Button } from "@/components/common/Button";
+import Protected from "@/components/layout/Protected";
 
 const SUGGESTIONS = [
   "¿Qué cláusulas revisar en un contrato de alquiler?",
@@ -20,6 +21,7 @@ export default function ChatbotPage() {
 
   return (
     <div className="min-h-screen">
+      <Protected />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="card-premium">
           <div className="card-premium-inner">

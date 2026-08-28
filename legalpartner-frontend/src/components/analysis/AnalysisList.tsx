@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { listAnalyses } from '@/lib/api';
 import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import type { ContractAnalysis, AnalysisState, ContractType } from '@/types';
@@ -50,6 +51,7 @@ function formatDate(dateString: string): string {
 }
 
 export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
+  const router = useRouter();
   const [analyses, setAnalyses] = useState<ContractAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,7 +126,7 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
     if (onAnalysisClick) {
       onAnalysisClick(analysisId);
     } else {
-      window.location.href = `/analysis/${analysisId}`;
+      router.push(`/analysis/${analysisId}`);
     }
   };
 

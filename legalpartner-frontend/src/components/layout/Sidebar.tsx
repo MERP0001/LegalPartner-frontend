@@ -1,10 +1,12 @@
 "use client"
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { LayoutDashboard, FileText, BarChart3, UploadCloud, LogOut } from 'lucide-react'
 
 export default function Sidebar() {
   const auth = useAuthStore()
+  const router = useRouter()
   if (!auth.isAuthenticated) return null
   return (
     <aside className='fixed top-0 left-0 flex-col hidden h-full text-white shadow-lg md:flex w-72 bg-gradient-to-b from-danger-600 via-danger-700 to-danger-800'>
@@ -39,7 +41,7 @@ export default function Sidebar() {
           <button
             onClick={() => {
               auth.logout()
-              if (typeof window !== 'undefined') window.location.href = '/'
+              router.push('/')
             }}
             className='flex items-center w-full gap-2 px-3 py-2 transition duration-200 rounded-lg group text-white/90 hover:bg-white/10 hover:text-white'
           >

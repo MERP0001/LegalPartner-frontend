@@ -5,6 +5,7 @@ import { getDocument, getDocumentDownloadUrl, startAnalysis, getLatestDocumentAn
 import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { Document, ContractAnalysis } from "@/types";
 import { Button } from "@/components/common/Button";
+import Protected from "@/components/layout/Protected";
 
 export default function ContractDetailPage() {
   const params = useParams();
@@ -64,9 +65,9 @@ export default function ContractDetailPage() {
     }
   };
 
-  if (loading) return <div className="p-6">Cargando...</div>;
-  if (error) return <div className="p-6 text-danger-600">{error}</div>;
-  if (!doc) return <div className="p-6">Documento no encontrado</div>;
+  if (loading) return <><Protected /><div className="p-6">Cargando...</div></>;
+  if (error) return <><Protected /><div className="p-6 text-danger-600">{error}</div></>;
+  if (!doc) return <><Protected /><div className="p-6">Documento no encontrado</div></>;
 
   const downloadUrl = getDocumentDownloadUrl(doc.document_id);
   const isAnalyzed = analysis !== null;
@@ -74,6 +75,7 @@ export default function ContractDetailPage() {
 
   return (
     <div className="min-h-screen">
+      <Protected />
       <div className="container px-4 py-8 mx-auto max-w-7xl">
         <div className="card-premium">
           <div className="card-premium-inner">
@@ -126,7 +128,7 @@ export default function ContractDetailPage() {
                 {(analysisStatus === 'completed' || analysisStatus === 'processed') && analysis?.analysis_id && (
                   <Button 
                     variant="outline" 
-                    onClick={() => window.location.href = `/analysis/${analysis.analysis_id}`}
+                    onClick={() => router.push(`/analysis/${analysis.analysis_id}`)}
                   >
                     Ver Análisis
                   </Button>
@@ -144,7 +146,7 @@ export default function ContractDetailPage() {
             >
               {isAnalyzing ? 'Iniciando...' : isAnalyzed ? 'Re-analizar' : 'Analizar'}
             </Button>
-            <Button variant="outline" onClick={() => (window.location.href = '/contracts')}>Volver</Button>
+            <Button variant="outline" onClick={() => router.push('/contracts')}>Volver</Button>
           </div>
         </div>
       </div>

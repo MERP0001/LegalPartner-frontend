@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAnalysisPolling } from "@/hooks/useAnalysisPolling";
 import type { ContractClause } from "@/types";
 import Protected from "@/components/layout/Protected";
@@ -38,6 +38,7 @@ function getRiskScoreClass(score: number) {
 
 export default function AnalysisDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
   const [selectedClause, setSelectedClause] = useState<ContractClause | null>(null);
   const [showFavorabilityGuide, setShowFavorabilityGuide] = useState(false);
@@ -113,7 +114,7 @@ export default function AnalysisDetailPage() {
       <div className="container px-4 py-8 mx-auto">
         <div className="mx-auto space-y-6 max-w-7xl">
           <button
-            onClick={() => window.location.href = '/analysis'}
+            onClick={() => router.push('/analysis')}
             className="flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4" />

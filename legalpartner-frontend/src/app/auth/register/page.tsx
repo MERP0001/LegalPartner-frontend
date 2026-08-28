@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/common/Button";
 import { Shield } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -18,12 +19,11 @@ export default function RegisterPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const auth = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
-    if (auth.isAuthenticated && typeof window !== "undefined") {
-      window.location.href = "/dashboard";
-    }
-  }, [auth.isAuthenticated]);
+    if (auth.isAuthenticated) router.replace("/dashboard");
+  }, [auth.isAuthenticated, router]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,19 +46,15 @@ export default function RegisterPage() {
       }
       if (res.requires_verification) {
         setStatus("Cuenta creada. Verifica tu email para activar.");
-        setTimeout(() => {
-          if (typeof window !== "undefined") window.location.href = "/auth/login";
-        }, 1200);
+        setTimeout(() => router.push("/auth/login"), 1200);
         return;
       }
       if (res.tokens?.access && res.tokens.refresh && res.user) {
         auth.login(res.tokens, res.user);
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       } else {
         setStatus("Cuenta creada. Inicia sesión para continuar.");
-        setTimeout(() => {
-          if (typeof window !== "undefined") window.location.href = "/auth/login";
-        }, 1200);
+        setTimeout(() => router.push("/auth/login"), 1200);
       }
     } catch (err: unknown) {
       setError(getApiErrorMessage(err, "No se pudo crear la cuenta"));

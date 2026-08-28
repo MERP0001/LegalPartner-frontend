@@ -2,9 +2,11 @@
 import { Button } from '@/components/common/Button';
 import { FileText, Shield, Zap } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const auth = useAuthStore();
+  const router = useRouter();
   return (
     <div className='min-h-screen bg-gradient-to-br from-primary-50 to-danger-50'>
 
@@ -24,10 +26,7 @@ export default function Home() {
             <Button
               size='lg'
               className='text-lg px-8 py-3 shadow-sm'
-              onClick={() => {
-                if (auth.isAuthenticated) window.location.href = '/upload';
-                else window.location.href = '/auth/login';
-              }}
+              onClick={() => router.push(auth.isAuthenticated ? '/upload' : '/auth/login')}
             >
               {auth.isAuthenticated ? 'Comenzar Análisis' : 'Inicia sesión para comenzar análisis'}
             </Button>

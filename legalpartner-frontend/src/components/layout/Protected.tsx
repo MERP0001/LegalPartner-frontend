@@ -1,9 +1,11 @@
 "use client"
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 
 export default function Protected() {
   const auth = useAuthStore()
+  const router = useRouter()
   useEffect(() => {
     if (typeof window === 'undefined') return
     let hasToken = false
@@ -16,8 +18,8 @@ export default function Protected() {
     } catch {}
     const isAuth = auth.isAuthenticated || hasToken
     if (!isAuth) {
-      window.location.href = '/auth/login'
+      router.replace('/auth/login')
     }
-  }, [auth.isAuthenticated])
+  }, [auth.isAuthenticated, router])
   return null
 }

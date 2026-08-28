@@ -1,12 +1,14 @@
 "use client"
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { Menu, X, LayoutDashboard, FileText, BarChart3, UploadCloud, LogIn, LogOut } from 'lucide-react'
 
 export default function MobileSidebar() {
   const [open, setOpen] = useState(false)
   const auth = useAuthStore()
+  const router = useRouter()
   if (!auth.isAuthenticated) return null
 
   return (
@@ -62,7 +64,7 @@ export default function MobileSidebar() {
                 <button
                   onClick={() => {
                     auth.logout()
-                    if (typeof window !== 'undefined') window.location.href = '/'
+                    router.push('/')
                   }}
                   className='group flex w-full items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition duration-200'
                 >

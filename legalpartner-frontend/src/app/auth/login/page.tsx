@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/common/Button";
 import { Shield } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,12 +17,11 @@ export default function LoginPage() {
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [resendMsg, setResendMsg] = useState<string | null>(null);
   const auth = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
-    if (auth.isAuthenticated && typeof window !== 'undefined') {
-      window.location.href = '/dashboard';
-    }
-  }, [auth.isAuthenticated]);
+    if (auth.isAuthenticated) router.replace('/dashboard');
+  }, [auth.isAuthenticated, router]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +44,7 @@ export default function LoginPage() {
       }
       if (res.tokens?.access && res.tokens.refresh && res.user) {
         auth.login(res.tokens, res.user);
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       } else {
         setError("Respuesta de login inválida");
       }
