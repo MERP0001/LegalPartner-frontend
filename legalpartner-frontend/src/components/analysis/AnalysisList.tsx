@@ -6,7 +6,8 @@ import { formatDateTime } from '@/lib/utils';
 import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import type { ContractAnalysis, AnalysisState, ContractType } from '@/types';
 import { ANALYSIS_STATE_LABELS, CONTRACT_TYPE_OPTIONS, getAnalysisStateLabel, getContractTypeLabel, isAnalysisInProgress } from '@/lib/labels';
-import { Filter, ChevronLeft, ChevronRight, FileText, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Filter, FileText, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
+import Pagination from '@/components/common/Pagination';
 
 interface AnalysisListProps {
   onAnalysisClick?: (analysisId: string) => void;
@@ -117,7 +118,7 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
   return (
     <div className="space-y-4">
       {/* Filters Section */}
-      <div className="p-4 bg-white border-4 rounded-xl shadow-sm" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+      <div className="p-4 bg-white border-4 rounded-xl shadow-sm lp-gradient-border">
         <div className="flex items-center gap-2 mb-3">
           <Filter className="w-5 h-5 text-gray-600" />
           <h3 className="font-semibold text-gray-900">Filtros</h3>
@@ -320,33 +321,14 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
         </div>
       )}
 
-      {/* Pagination */}
-      {!loading && totalPages > 1 && (
-        <div className="flex items-center justify-between p-4 bg-white border-4 rounded-lg" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
-          <div className="text-sm text-gray-600">
-            Página {currentPage} de {totalPages}
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={!hasPrevious}
-              className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-sm"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Anterior
-            </button>
-            
-            <button
-              onClick={() => setCurrentPage((p) => p + 1)}
-              disabled={!hasNext}
-              className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-sm"
-            >
-              Siguiente
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+      {!loading && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasPrevious={hasPrevious}
+          hasNext={hasNext}
+          onPageChange={setCurrentPage}
+        />
       )}
     </div>
   );

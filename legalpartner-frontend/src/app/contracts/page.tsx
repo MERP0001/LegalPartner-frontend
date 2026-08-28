@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/authStore";
 import DocumentCard from "@/components/documents/DocumentCard";
 import { Button } from "@/components/common/Button";
 import Protected from "@/components/layout/Protected";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import Pagination from "@/components/common/Pagination";
 
 export default function ContractsPage() {
   const [docs, setDocs] = useState<Document[]>([]);
@@ -138,33 +138,15 @@ export default function ContractsPage() {
             ))}
           </div>
           
-          {/* Pagination */}
-          {!loading && totalPages > 1 && (
-            <div className="flex items-center justify-between p-4 mt-4 bg-white border-4 rounded-lg" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
-              <div className="text-sm text-gray-600">
-                Página {currentPage} de {totalPages}
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={!hasPrevious}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-sm"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  Anterior
-                </button>
-                
-                <button
-                  onClick={() => setCurrentPage((p) => p + 1)}
-                  disabled={!hasNext}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-sm"
-                >
-                  Siguiente
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+          {!loading && (
+            <Pagination
+              className="mt-4"
+              currentPage={currentPage}
+              totalPages={totalPages}
+              hasPrevious={hasPrevious}
+              hasNext={hasNext}
+              onPageChange={setCurrentPage}
+            />
           )}
         </div>
       </div>

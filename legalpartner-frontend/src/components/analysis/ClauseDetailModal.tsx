@@ -199,7 +199,7 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
               {/* Metrics */}
               {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2"> */}
                 {/* Favorability */}
-                {/* <div className="p-4 bg-white border-2 rounded-lg" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+                {/* <div className="p-4 bg-white border-2 rounded-lg lp-gradient-border">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Favorabilidad</span>
                     <div className={`p-1.5 rounded ${getFavorabilityColor(clause.analysis.favorability_level)}`}>
@@ -233,7 +233,7 @@ export default function ClauseDetailModal({ clause, isOpen, onClose }: ClauseDet
                 </div> */}
 
                 {/* Confidence */}
-                {/* <div className="p-4 bg-white border-2 rounded-lg" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+                {/* <div className="p-4 bg-white border-2 rounded-lg lp-gradient-border">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Confianza IA</span>
                     <div className="p-1.5 bg-purple-100 rounded">

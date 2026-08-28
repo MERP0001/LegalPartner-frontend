@@ -154,13 +154,13 @@ export default function AnalysisDetailPage() {
 
           {isCompleted && (
             <>
-              <div className="p-4 bg-white border-4 rounded-lg shadow-sm" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+              <div className="p-4 bg-white border-4 rounded-lg shadow-sm lp-gradient-border">
                 <div className="mb-1 text-sm text-gray-600">Total Cláusulas Analizadas</div>
                 <div className="text-2xl font-bold text-gray-900">{data.clauses?.filter(c => c.has_analysis).length || 0}</div>
               </div>
 
               {(data.analysis_summary || data.general_analysis) && (
-                <div className="p-6 bg-white border-4 rounded-lg shadow-sm" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+                <div className="p-6 bg-white border-4 rounded-lg shadow-sm lp-gradient-border">
                   <h2 className="mb-4 text-lg font-semibold text-gray-900">Resumen del Análisis</h2>
                   {data.analysis_summary && (
                     <div className="mb-4">
@@ -178,7 +178,7 @@ export default function AnalysisDetailPage() {
               )}
 
               {data.clauses && data.clauses.filter(c => c.has_analysis).length > 0 && (
-                <div className="p-6 bg-white border-4 rounded-lg shadow-sm bg-gradient-to-r from-primary-600 to-danger-500" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
+                <div className="p-6 bg-white border-4 rounded-lg shadow-sm bg-gradient-to-r from-primary-600 to-danger-500 lp-gradient-border">
                   <div className="p-6 bg-white rounded">
                     <h2 className="mb-4 text-lg font-semibold text-gray-900">Cláusulas Analizadas ({data.clauses.filter(c => c.has_analysis).length})</h2>
                   <div className="space-y-4">
@@ -229,7 +229,7 @@ export default function AnalysisDetailPage() {
 
       {selectedClause && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={() => setSelectedClause(null)}>
-          <div className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-y-auto border-4" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }} onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-y-auto border-4 lp-gradient-border" onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 flex items-center justify-between gap-3 p-6 bg-white border-b border-gray-200">
               <h3 className="flex-1 text-lg font-semibold text-gray-900">Detalle de Cláusula {(data.clauses?.filter(c => c.has_analysis).findIndex(c => c.clause_id === selectedClause.clause_id) ?? -1) + 1}</h3>
               <div className="flex items-center gap-2">
@@ -245,7 +245,7 @@ export default function AnalysisDetailPage() {
             <div className="p-6 space-y-6">
               <div>
                 <h4 className="mb-2 text-sm font-medium text-gray-700">Texto de la Cláusula</h4>
-                <div className="p-4 text-gray-900 whitespace-pre-line border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>{selectedClause.clause_text}</div>
+                <div className="p-4 text-gray-900 whitespace-pre-line border-2 rounded-lg bg-gray-50 lp-gradient-border">{selectedClause.clause_text}</div>
               </div>
 
               {selectedClause.analysis && (
@@ -334,7 +334,7 @@ export default function AnalysisDetailPage() {
           </div>
           {showFavorabilityGuide && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={() => setShowFavorabilityGuide(false)}>
-              <div className="w-full max-w-sm bg-white border-4 rounded-lg shadow-lg" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }} onClick={e => e.stopPropagation()}>
+              <div className="w-full max-w-sm bg-white border-4 rounded-lg shadow-lg lp-gradient-border" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between px-4 py-3 border-b">
                   <h4 className="text-sm font-semibold text-gray-800">Guía Favorabilidad</h4>
                   <button onClick={() => setShowFavorabilityGuide(false)} className="p-1 rounded hover:bg-gray-100" aria-label="Cerrar guía">

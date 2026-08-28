@@ -31,8 +31,10 @@
   .badge-soft {
     @apply inline-flex items-center rounded-full px-3 py-1 text-xs ring-1 ring-gray-300/50;
   }
+  /* Borde degradado azul→rojo; combinar con border-2 / border-4 para el grosor */
   .lp-gradient-border {
-    border: 4px solid transparent;
+    border-style: solid;
+    border-color: transparent;
     border-image: linear-gradient(to right, #002D62, #ef4444) 1;
   }
 }
