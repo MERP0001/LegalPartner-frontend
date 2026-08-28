@@ -35,8 +35,8 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      if (res.tokens?.access && res.user) {
-        auth.login(res.tokens.access, res.user);
+      if (res.tokens?.access && res.tokens.refresh && res.user) {
+        auth.login(res.tokens, res.user);
         window.location.href = "/dashboard";
       } else {
         setError("Respuesta de login inválida");

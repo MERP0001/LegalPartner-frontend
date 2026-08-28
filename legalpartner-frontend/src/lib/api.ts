@@ -35,16 +35,58 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Rutas de autenticación: un 401 aquí es una credencial incorrecta, no una sesión caducada.
+const AUTH_PATHS = [
+  '/api/auth/login/',
+  '/api/auth/register/',
+  '/api/auth/token/refresh/',
+  '/api/auth/verify-email/',
+];
+
+// Una única renovación en vuelo aunque varias peticiones reciban 401 a la vez.
+let refreshPromise: Promise<string | null> | null = null;
+
+async function refreshAccessToken(): Promise<string | null> {
+  const refresh = useAuthStore.getState().refreshToken;
+  if (!refresh) return null;
+  if (!refreshPromise) {
+    // Cliente axios "limpio" para no pasar por los interceptores.
+    refreshPromise = axios
+      .post<{ access: string; refresh?: string }>(`${API_BASE_URL}/api/auth/token/refresh/`, { refresh })
+      .then((res) => {
+        const access = res.data.access;
+        // ROTATE_REFRESH_TOKENS está activo en el backend: llega un refresh nuevo.
+        useAuthStore.getState().setTokens({ access, refresh: res.data.refresh ?? refresh });
+        return access;
+      })
+      .catch(() => null)
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
+function forceLogout() {
+  useAuthStore.getState().logout();
+  if (typeof window !== 'undefined') {
+    window.location.href = '/auth/login';
+  }
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isAuthPath = AUTH_PATHS.some((p) => originalRequest?.url?.includes(p));
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthPath) {
       originalRequest._retry = true;
-      useAuthStore.getState().logout();
-      if (typeof window !== 'undefined') {
-        window.location.href = '/auth/login';
+      const access = await refreshAccessToken();
+      if (access) {
+        originalRequest.headers.Authorization = `Bearer ${access}`;
+        return apiClient(originalRequest);
       }
+      forceLogout();
     }
     return Promise.reject(error);
   }

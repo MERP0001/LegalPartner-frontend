@@ -51,8 +51,8 @@ export default function RegisterPage() {
         }, 1200);
         return;
       }
-      if (res.tokens?.access && res.user) {
-        auth.login(res.tokens.access, res.user);
+      if (res.tokens?.access && res.tokens.refresh && res.user) {
+        auth.login(res.tokens, res.user);
         window.location.href = "/dashboard";
       } else {
         setStatus("Cuenta creada. Inicia sesión para continuar.");
