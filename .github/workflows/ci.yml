@@ -13,8 +13,8 @@ jobs:
       # El build de producción exige la variable; en CI basta un valor de relleno.
       NEXT_PUBLIC_API_BASE_URL: https://api.example.invalid
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
