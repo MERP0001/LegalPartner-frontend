@@ -203,9 +203,7 @@ export async function chatbotAsk(
   // El cliente axios global tiene timeout=10000ms; aquí anulamos el timeout
   // para que la petición no sea cancelada por el cliente. timeout=0 significa
   // sin límite en axios.
-  const axiosConfig = { timeout: 0 } as Record<string, unknown>;
-
-  const res = await apiClient.post('/api/consultations/ask/', { question, context, options }, axiosConfig as any);
+  const res = await apiClient.post('/api/consultations/ask/', { question, context, options }, { timeout: 0 });
   return res.data as ApiResponse<ConsultationResponseData>;
 }
 
