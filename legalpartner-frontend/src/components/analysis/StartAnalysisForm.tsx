@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { listDocuments, startAnalysis } from '@/lib/api';
+import { listDocuments, startAnalysis, getAnalysisProgress, type AnalysisProgressData } from '@/lib/api';
 import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import { Button } from '@/components/common/Button';
 import type { Document, ContractType } from '@/types';
 import { FileText, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+
+const PROGRESS_POLL_INTERVAL_MS = 3000;
 
 interface StartAnalysisFormProps {
   preSelectedDocumentId?: string;
@@ -26,15 +28,50 @@ export default function StartAnalysisForm({
   const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [progress, setProgress] = useState<AnalysisProgressData | null>(null);
 
-  // Hook para notificaciones
- 
+  // Sondear el progreso de la tarea Celery hasta que termine
+  useEffect(() => {
+    if (!currentTaskId || !currentAnalysisId) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const poll = async () => {
+      try {
+        const res = await getAnalysisProgress(currentTaskId);
+        if (cancelled) return;
+        if (res.success && res.data) {
+          setProgress(res.data);
+          if (res.data.state === 'SUCCESS') {
+            onAnalysisComplete?.(res.data.result?.analysis_id || currentAnalysisId);
+            return;
+          }
+          if (res.data.state === 'FAILURE') {
+            setError(res.data.description || 'El análisis falló');
+            onAnalysisFailed?.(res.data.description || 'El análisis falló');
+            return;
+          }
+        }
+      } catch {
+        // Error transitorio: se reintenta en el siguiente tick
+      }
+      timer = setTimeout(poll, PROGRESS_POLL_INTERVAL_MS);
+    };
+    poll();
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+    // Los callbacks se leen en cada tick; no relanzar el sondeo si el padre los recrea
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTaskId, currentAnalysisId]);
+
   // Load documents on mount
   useEffect(() => {
     const loadDocs = async () => {
       try {
         setLoadingDocs(true);
-        const res = await listDocuments({ document_status: 'processed' });
+        // El filtro del backend se llama "status" (DocumentFilter), no document_status
+        const res = await listDocuments({ status: 'processed' });
         if (res.success && res.data) {
           setDocuments(res.data || []);
         } else {
@@ -67,6 +104,9 @@ export default function StartAnalysisForm({
 
     setError(null);
     setSuccessMessage(null);
+    setProgress(null);
+    setCurrentAnalysisId(null);
+    setCurrentTaskId(null);
     setLoading(true);
 
     try {
@@ -180,6 +220,17 @@ export default function StartAnalysisForm({
                 <p className="text-xs text-green-700 mt-2">
                   El análisis se está procesando. Esto puede tardar entre 1-5 minutos.
                 </p>
+                {progress && (
+                  <div className="mt-3 space-y-1" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.progress}>
+                    <div className="flex items-center justify-between text-xs text-green-800">
+                      <span>{progress.stage}{progress.description ? ` · ${progress.description}` : ''}</span>
+                      <span className="font-medium">{progress.progress}%</span>
+                    </div>
+                    <div className="w-full h-2 overflow-hidden bg-green-200 rounded-full">
+                      <div className="h-full transition-all duration-500 bg-green-600" style={{ width: `${progress.progress}%` }} />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -209,7 +260,7 @@ export default function StartAnalysisForm({
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={loading || loadingDocs || documents.length === 0}
+          disabled={loading || loadingDocs || documents.length === 0 || (!!currentTaskId && !error && progress?.state !== 'SUCCESS')}
           className="w-full text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           {loading ? (

@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
-import { getAnalysis } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
-import type { ContractAnalysis, ContractClause } from "@/types";
+import { useAnalysisPolling } from "@/hooks/useAnalysisPolling";
+import type { ContractClause } from "@/types";
 import Protected from "@/components/layout/Protected";
 import { ArrowLeft, FileText, Loader2, XCircle, AlertCircle } from "lucide-react";
 import FavorabilityBadge from "@/components/common/FavorabilityBadge";
@@ -40,29 +39,15 @@ function getRiskScoreClass(score: number) {
 export default function AnalysisDetailPage() {
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
-  const [data, setData] = useState<ContractAnalysis | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedClause, setSelectedClause] = useState<ContractClause | null>(null);
   const [showFavorabilityGuide, setShowFavorabilityGuide] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await getAnalysis(id);
-        if (res.success && res.data) {
-          setData(res.data);
-        } else {
-          setError(getErrorMessage(res, 'No se pudo cargar el análisis'));
-        }
-      } catch (err) {
-        setError(getApiErrorMessage(err, 'Error al cargar el análisis'));
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (id) load();
-  }, [id]);
+  // Carga el análisis y, mientras esté en cola o procesando, lo refresca cada 5 s
+  const { analysis: data, loading, error } = useAnalysisPolling({
+    analysisId: id || null,
+    interval: 5000,
+    autoPoll: true,
+  });
 
   if (loading) {
     return (

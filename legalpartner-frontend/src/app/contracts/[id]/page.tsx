@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getDocument, getDocumentDownloadUrl, startAnalysis, getLatestDocumentAnalysis } from "@/lib/api";
 import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { Document, ContractAnalysis } from "@/types";
@@ -8,6 +8,7 @@ import { Button } from "@/components/common/Button";
 
 export default function ContractDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
   const [doc, setDoc] = useState<Document | null>(null);
   const [analysis, setAnalysis] = useState<ContractAnalysis | null>(null);
@@ -50,6 +51,8 @@ export default function ContractDetailPage() {
       const res = await startAnalysis(id, doc?.contract_type || undefined);
       if (res?.success && res.data?.analysis_id) {
         setActionMsg(res.message || "Análisis iniciado");
+        // El detalle del análisis sondea el progreso hasta que termine
+        router.push(`/analysis/${res.data.analysis_id}`);
       } else {
         setActionMsg(getErrorMessage(res, "No se pudo iniciar el análisis"));
       }

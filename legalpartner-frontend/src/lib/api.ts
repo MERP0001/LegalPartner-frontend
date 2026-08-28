@@ -202,6 +202,30 @@ export async function startAnalysis(documentId: string, contractType?: string): 
   return res.data as StartAnalysisResponse;
 }
 
+/** GET /api/contracts/analysis/progress/{task_id}/ (estado de la tarea Celery) */
+export type AnalysisProgressData = {
+  task_id: string;
+  state: 'PENDING' | 'PROGRESS' | 'SUCCESS' | 'FAILURE' | string;
+  stage: string;
+  progress: number;
+  description: string;
+  total_steps?: number;
+  current_step?: number;
+  result?: {
+    analysis_id?: string;
+    total_clauses?: number;
+    flagged_clauses?: number;
+    overall_favorability?: string;
+    risk_score?: number;
+    processing_time_seconds?: number;
+  };
+};
+
+export async function getAnalysisProgress(taskId: string): Promise<ApiResponse<AnalysisProgressData>> {
+  const res = await apiClient.get(`/api/contracts/analysis/progress/${taskId}/`);
+  return res.data as ApiResponse<AnalysisProgressData>;
+}
+
 export async function getStats(): Promise<ApiResponse<DocumentStats>> {
   const res = await apiClient.get('/api/documents/stats/');
   return res.data as ApiResponse<DocumentStats>;

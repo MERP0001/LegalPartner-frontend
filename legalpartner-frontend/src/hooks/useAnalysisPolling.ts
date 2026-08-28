@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { getAnalysis } from '@/lib/api';
+import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import type { ContractAnalysis } from '@/types';
 
 interface UseAnalysisPollingOptions {
   analysisId: string | null;
   enabled?: boolean;
   interval?: number;
+  /** Seguir sondeando automáticamente mientras el análisis esté en cola o procesando */
+  autoPoll?: boolean;
   onComplete?: (analysis: ContractAnalysis) => void;
   onFailed?: (analysis: ContractAnalysis) => void;
   onProgress?: (analysis: ContractAnalysis) => void;
@@ -24,6 +27,7 @@ export function useAnalysisPolling({
   analysisId,
   enabled = true,
   interval = 5000,
+  autoPoll = false,
   onComplete,
   onFailed,
   onProgress,
@@ -34,6 +38,7 @@ export function useAnalysisPolling({
   const [isPolling, setIsPolling] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const initialFetchDoneRef = useRef(false);
+  const hasLoadedRef = useRef(false);
   
   // Use refs to store callbacks to avoid recreating fetchAnalysis
   const onCompleteRef = useRef(onComplete);
@@ -64,12 +69,14 @@ export function useAnalysisPolling({
     if (!analysisId) return;
 
     try {
-      setLoading(true);
+      // Solo la primera carga muestra el estado "loading"; los sondeos son silenciosos
+      if (!hasLoadedRef.current) setLoading(true);
       setError(null);
       
       const res = await getAnalysis(analysisId);
       
       if (res.success && res.data) {
+        hasLoadedRef.current = true;
         setAnalysis(res.data);
 
         // Check if analysis is completed
@@ -84,19 +91,19 @@ export function useAnalysisPolling({
         }
         // Analysis is in progress
         else if (res.data.analysis_state === 'processing' || res.data.analysis_state === 'queued') {
+          if (autoPoll) setIsPolling(true);
           onProgressRef.current?.(res.data);
         }
       } else {
-        setError(res.message || 'Error al cargar análisis');
+        setError(getErrorMessage(res, 'Error al cargar análisis'));
       }
     } catch (err) {
-      console.error('Error fetching analysis:', err);
-      setError('Error al conectar con el servidor');
+      setError(getApiErrorMessage(err, 'Error al conectar con el servidor'));
       // Don't stop polling on temporary network errors
     } finally {
       setLoading(false);
     }
-  }, [analysisId, stopPolling]);
+  }, [analysisId, autoPoll, stopPolling]);
 
   // Initial fetch - solo una vez cuando analysisId o enabled cambian
   useEffect(() => {
