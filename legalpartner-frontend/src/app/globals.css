@@ -36,9 +36,3 @@
     border-image: linear-gradient(to right, #002D62, #ef4444) 1;
   }
 }
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}

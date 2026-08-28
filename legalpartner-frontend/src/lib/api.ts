@@ -7,9 +7,7 @@ import type {
   DocumentStatus,
   DocumentStats, 
   ContractAnalysis, 
-  Consultation, 
   ConsultationResponseData, 
-  ConsultationFeedback,
   AnalysisListResponse,
   PaginatedResponse
 } from '@/types';
@@ -184,10 +182,6 @@ export async function getOcrStatus(id: string): Promise<OcrStatusResponse> {
   return res.data as OcrStatusResponse;
 }
 
-export function getDocumentDownloadUrl(id: string): string {
-  return `${API_BASE_URL}/api/documents/${id}/download/`;
-}
-
 export type StartAnalysisResponse = {
   success: boolean;
   data?: { analysis_id: string; task_id?: string };
@@ -266,11 +260,6 @@ export type ReanalyzeResponse = {
   error?: string;
 };
 
-export async function reanalyzeAnalysis(id: string): Promise<ReanalyzeResponse> {
-  const res = await apiClient.post(`/api/contracts/analysis/${id}/reanalyze/`);
-  return res.data as ReanalyzeResponse;
-}
-
 /** Respuesta 202 de POST /api/consultations/ask/: la pregunta queda encolada. */
 export type ChatbotQueuedData = {
   status: 'processing';
@@ -348,21 +337,6 @@ export async function askChatbotAndWait(
     return data;
   }
   throw new Error('La consulta está tardando demasiado. Inténtalo de nuevo más tarde.');
-}
-
-export async function listConsultations(params?: Record<string, unknown>): Promise<PaginatedResponse<Consultation>> {
-  const res = await apiClient.get('/api/consultations/', { params });
-  return res.data as PaginatedResponse<Consultation>;
-}
-
-export async function getConsultation(id: string): Promise<ApiResponse<Consultation>> {
-  const res = await apiClient.get(`/api/consultations/${id}/`);
-  return res.data as ApiResponse<Consultation>;
-}
-
-export async function sendConsultationFeedback(id: string, feedback: ConsultationFeedback): Promise<{ success: boolean; message?: string }> {
-  const res = await apiClient.post(`/api/consultations/${id}/feedback/`, feedback);
-  return res.data as { success: boolean; message?: string };
 }
 
 export default apiClient;

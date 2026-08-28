@@ -93,29 +93,12 @@ export default function RiskDistributionChart({ analyses }: RiskDistributionChar
   const [showHelp, setShowHelp] = useState(false);
   
   // Filtrar análisis completados con puntuación de riesgo
-  const completedAnalyses = analyses.filter(analysis => {
-    const hasValidData = (
-      (analysis.analysis_state === 'completed' || analysis.analysis_state === 'processed') && 
-      (analysis.risk_score !== undefined && analysis.risk_score !== null)
-    );
-    
-    // Debug log para entender qué datos tenemos
-    if (!hasValidData) {
-      console.log('Risk analysis filtered out:', {
-        id: analysis.analysis_id,
-        state: analysis.analysis_state,
-        risk: analysis.risk_score
-      });
-    }
-    
-    return hasValidData;
-  });
-
-  console.log('Risk distribution data processed:', {
-    totalAnalyses: analyses.length,
-    validRiskData: completedAnalyses.length,
-    sampleRiskScores: completedAnalyses.slice(0, 5).map(a => a.risk_score)
-  });
+  const completedAnalyses = analyses.filter(
+    (analysis) =>
+      (analysis.analysis_state === 'completed' || analysis.analysis_state === 'processed') &&
+      analysis.risk_score !== undefined &&
+      analysis.risk_score !== null
+  );
 
   // Calcular distribución de riesgos
   const distribution: RiskDistributionData[] = riskRanges.map(range => {

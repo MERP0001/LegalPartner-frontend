@@ -5,7 +5,6 @@ import { listAnalyses } from "@/lib/api";
 import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { ContractAnalysis } from "@/types";
 import { RiskFavorabilityScatter, RiskDistributionChart } from "@/components/dashboard/charts";
-import AnalysisDebugger from "./AnalysisDebugger";
 
 interface DashboardChartsProps {
   className?: string;
@@ -86,19 +85,6 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
     analysis.analysis_state === 'completed' || analysis.analysis_state === 'processed'
   );
 
-  // Debug log para entender los datos
-  console.log('Dashboard analyses debug:', {
-    totalAnalyses: analyses.length,
-    completedAnalyses: completedAnalyses.length,
-    sampleAnalysis: completedAnalyses[0] ? {
-      id: completedAnalyses[0].analysis_id,
-      state: completedAnalyses[0].analysis_state,
-      favorability: completedAnalyses[0].average_favorability,
-      risk: completedAnalyses[0].risk_score,
-      totalClauses: completedAnalyses[0].total_clauses
-    } : 'No completed analyses'
-  });
-
   if (completedAnalyses.length === 0) {
     return (
       <div className={`${className || ''}`}>
@@ -118,9 +104,6 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
 
   return (
     <div className={`space-y-6 ${className || ''}`}>
-      {/* Debugger temporal - remover en producción */}
-      {/* <AnalysisDebugger analyses={completedAnalyses} /> */}
-      
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Scatter Plot: Favorabilidad vs Riesgo */}
         <RiskFavorabilityScatter 

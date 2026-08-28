@@ -57,15 +57,6 @@ export interface ContractAnalysis {
   current_step?: string;
   estimated_time_remaining?: number;
   error_message?: string;
-  // Permisos de usuario
-  user_permissions?: UserAnalysisPermissions;
-}
-
-export interface UserAnalysisPermissions {
-  can_export: boolean;
-  can_view_precedents: boolean;
-  can_retry_analysis: boolean;
-  remaining_analyses_this_month: number;
 }
 
 export type AnalysisState = 'queued' | 'processing' | 'processed' | 'completed' | 'failed';
@@ -97,7 +88,6 @@ export interface ClauseAnalysis {
   is_high_risk: boolean;
   risk_factors: string[];
   recommendations: string[];
-  legal_precedents: LegalPrecedent[];
   confidence_score: number;
   related_articles: LegalArticleReference[];
   created_at: string;
@@ -111,12 +101,6 @@ export interface LegalArticleReference {
   similarity_score?: number;
   excerpt?: string;
   content?: string;
-}
-
-export interface LegalPrecedent {
-  case: string;
-  relevance: string;
-  excerpt?: string;
 }
 
 // User Types
@@ -214,50 +198,6 @@ export interface DocumentStats {
   };
 }
 
-// Form Types
-export interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-export interface RegisterFormData {
-  email: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  organization?: string;
-}
-
-export interface UploadOptions {
-  contract_type?: ContractType;
-  onProgress?: (progress: number) => void;
-}
-
-export interface CreateAnalysisData {
-  document_id: string;
-  contract_type?: ContractType;
-  use_rag?: boolean;
-  use_together_ai?: boolean;
-  deep_analysis?: boolean;
-}
-
-// Filter Types
-export interface DocumentFilters {
-  status?: DocumentStatus;
-  contract_type?: ContractType;
-  search?: string;
-  page?: number;
-  page_size?: number;
-}
-
-export interface AnalysisFilters {
-  status?: AnalysisState;
-  risk_level?: 'low' | 'medium' | 'high' | 'critical';
-  search?: string;
-  page?: number;
-  page_size?: number;
-}
-
 // Chatbot Types
 export interface ConsultationSource {
   type: string;
@@ -275,25 +215,4 @@ export interface ConsultationResponseData {
   sources: ConsultationSource[];
   related_questions: string[];
   created_at: string;
-}
-
-export interface Consultation {
-  agent_chat_id: string;
-  topic: string;
-  created_by_email: string;
-  created_at: string;
-  updated_at: string;
-  last_activity?: string | null;
-  is_active: boolean;
-  message_count: number;
-  duration_minutes: number;
-  is_recent: boolean;
-  metadata: Record<string, unknown>;
-}
-
-export interface ConsultationFeedback {
-  satisfaction_rating: number;
-  is_helpful: boolean;
-  comments?: string;
-  suggested_improvement?: string;
 }

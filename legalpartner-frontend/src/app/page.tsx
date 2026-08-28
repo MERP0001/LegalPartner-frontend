@@ -75,15 +75,6 @@ export default function Home() {
 
         {/* Stats eliminadas por ahora para evitar datos no reales */}
       </main>
-
-      {/* Footer */}
-      <footer className='border-t bg-white mt-16'>
-        <div className='container mx-auto px-4 py-8'>
-          <div className='text-center text-gray-600'>
-            <p>&copy; 2025 LegalPartner. Todos los derechos reservados.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

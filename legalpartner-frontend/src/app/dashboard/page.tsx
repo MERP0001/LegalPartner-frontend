@@ -152,17 +152,6 @@ export default function DashboardPage() {
                   <div className="text-3xl font-bold text-gray-900">{processing}</div>
                 </div>
               </div>
-              {/* <div className="transition-all duration-300 ease-in-out transform border-2 card-premium border-danger-500 hover:scale-105 hover:shadow-xl">
-                <div className="card-premium-inner">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-700">Almacenamiento</div>
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-50">
-                      <HardDrive className="w-5 h-5 text-primary-600" />
-                    </div>
-                  </div>
-                  <div className="text-3xl font-bold text-gray-900">{storageUsedMb} MB</div>
-                </div>
-              </div> */}
             </div>
 
             <div className="p-4 panel">

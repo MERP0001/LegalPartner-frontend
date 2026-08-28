@@ -12,14 +12,12 @@ interface AuthState {
   token: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
   /** true cuando el estado persistido ya se leyó de localStorage (solo en cliente) */
   hasHydrated: boolean;
   setHasHydrated: (value: boolean) => void;
   login: (tokens: AuthTokens, user: User) => void;
   setTokens: (tokens: AuthTokens) => void;
   logout: () => void;
-  setLoading: (loading: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -30,7 +28,6 @@ export const useAuthStore = create<AuthState>()(
         token: null,
         refreshToken: null,
         isAuthenticated: false,
-        isLoading: false,
         hasHydrated: false,
         setHasHydrated: (value) => set({ hasHydrated: value }),
         login: (tokens, user) =>
@@ -39,7 +36,6 @@ export const useAuthStore = create<AuthState>()(
             refreshToken: tokens.refresh,
             user,
             isAuthenticated: true,
-            isLoading: false,
           }),
         // Usado por el interceptor al renovar el access token (el backend rota el refresh).
         setTokens: (tokens) =>
@@ -50,9 +46,7 @@ export const useAuthStore = create<AuthState>()(
             refreshToken: null,
             user: null,
             isAuthenticated: false,
-            isLoading: false,
           }),
-        setLoading: (loading: boolean) => set({ isLoading: loading }),
       }),
       {
         name: 'auth-storage',

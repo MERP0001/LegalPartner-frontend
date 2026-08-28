@@ -35,20 +35,16 @@ export default function Sidebar() {
         </Link>
       </nav>
       <div className='px-3 py-4 border-t border-white/20'>
-        {!auth.isAuthenticated ? (
-          <></>
-        ) : (
-          <button
-            onClick={() => {
-              auth.logout()
-              router.push('/')
-            }}
-            className='flex items-center w-full gap-2 px-3 py-2 transition duration-200 rounded-lg group text-white/90 hover:bg-white/10 hover:text-white'
-          >
-            <LogOut className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1' />
-            <span>Cerrar sesión</span>
-          </button>
-        )}
+        <button
+          onClick={() => {
+            auth.logout()
+            router.push('/')
+          }}
+          className='flex items-center w-full gap-2 px-3 py-2 transition duration-200 rounded-lg group text-white/90 hover:bg-white/10 hover:text-white'
+        >
+          <LogOut className='w-5 h-5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-1' />
+          <span>Cerrar sesión</span>
+        </button>
       </div>
     </aside>
   )

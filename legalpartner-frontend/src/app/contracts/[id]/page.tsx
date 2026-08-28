@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getDocument, getDocumentDownloadUrl, startAnalysis, getLatestDocumentAnalysis } from "@/lib/api";
+import { getDocument, startAnalysis, getLatestDocumentAnalysis } from "@/lib/api";
 import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { Document, ContractAnalysis } from "@/types";
 import { Button } from "@/components/common/Button";
@@ -69,7 +69,6 @@ export default function ContractDetailPage() {
   if (error) return <><Protected /><div className="p-6 text-danger-600">{error}</div></>;
   if (!doc) return <><Protected /><div className="p-6">Documento no encontrado</div></>;
 
-  const downloadUrl = getDocumentDownloadUrl(doc.document_id);
   const isAnalyzed = analysis !== null;
   const analysisStatus = analysis?.analysis_state;
 
@@ -89,7 +88,6 @@ export default function ContractDetailPage() {
               <div className="text-xl font-semibold text-gray-900">{doc.original_filename}</div>
               <div className="text-sm text-gray-600">Tipo: {doc.contract_type || 'N/A'}</div>
             </div>
-            {/* <a href={downloadUrl} className="text-primary-600" target="_blank" rel="noreferrer">Descargar</a> */}
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="p-4 rounded bg-white/90 ring-1 ring-gray-100/60">

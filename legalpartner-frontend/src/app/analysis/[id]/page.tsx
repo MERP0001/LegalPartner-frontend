@@ -8,17 +8,6 @@ import { ArrowLeft, FileText, Loader2, XCircle, AlertCircle } from "lucide-react
 import FavorabilityBadge from "@/components/common/FavorabilityBadge";
 import { favorabilityDefinitions } from "@/lib/favorabilityDefinitions";
 
-function getFavorabilityClass(level: string) {
-  const classes = {
-    'very_favorable': 'bg-green-100 text-green-800 border-green-200',
-    'favorable': 'bg-blue-100 text-blue-800 border-blue-200',
-    'neutral': 'bg-gray-100 text-gray-800 border-gray-200',
-    'unfavorable': 'bg-orange-100 text-orange-800 border-orange-200',
-    'very_unfavorable': 'bg-red-100 text-red-800 border-red-200'
-  };
-  return classes[level as keyof typeof classes] || 'bg-gray-100 text-gray-800';
-}
-
 function getFavorabilityLabel(level: string): string {
   const labels: Record<string, string> = {
     'very_favorable': 'Seguro',
@@ -28,12 +17,6 @@ function getFavorabilityLabel(level: string): string {
     'very_unfavorable': 'Crítico',
   };
   return labels[level] || level;
-}
-
-function getRiskScoreClass(score: number) {
-  if (score <= 3) return 'text-green-600';
-  if (score <= 6) return 'text-orange-600';
-  return 'text-red-600';
 }
 
 export default function AnalysisDetailPage() {
@@ -188,24 +171,6 @@ export default function AnalysisDetailPage() {
                 <div className="mb-1 text-sm text-gray-600">Total Cláusulas Analizadas</div>
                 <div className="text-2xl font-bold text-gray-900">{data.clauses?.filter(c => c.has_analysis).length || 0}</div>
               </div>
-              {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <div className="mb-1 text-sm text-gray-600">Cláusulas Marcadas</div>
-                  <div className="text-2xl font-bold text-orange-600">{data.flagged_clauses || 0}</div>
-                </div>
-                <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <div className="mb-1 text-sm text-gray-600">Favorabilidad</div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {data.average_favorability ? `${data.average_favorability.toFixed(1)}/10` : 'N/A'}
-                  </div>
-                </div>
-                <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <div className="mb-1 text-sm text-gray-600">Riesgo</div>
-                  <div className={`text-2xl font-bold ${data.risk_score ? getRiskScoreClass(data.risk_score) : 'text-gray-900'}`}>
-                    {data.risk_score ? `${data.risk_score.toFixed(1)}/10` : 'N/A'}
-                  </div>
-                </div>
-              </div> */}
 
               {(data.analysis_summary || data.general_analysis) && (
                 <div className="p-6 bg-white border-4 rounded-lg shadow-sm" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
@@ -243,7 +208,6 @@ export default function AnalysisDetailPage() {
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-gray-900">Cláusula {index + 1}</span>
-                            {/* <span className="ml-2 text-sm text-gray-500">• {clause.clause_type}</span> */}
                           </div>
                           {clause.analysis && (
                             <FavorabilityBadge 
@@ -253,22 +217,6 @@ export default function AnalysisDetailPage() {
                           )}
                         </div>
                         <p className="mb-3 text-sm text-gray-700 line-clamp-2">{clause.text_preview || clause.clause_text}</p>
-                        {clause.analysis && (
-                          <div className="grid grid-cols-3 gap-3 pt-3 border-t border-gray-100">
-                            {/* <div>
-                              <div className="text-xs text-gray-500">Favorabilidad</div>
-                              <div className="text-sm font-medium text-gray-900">{clause.analysis.favorability_rate?.toFixed(1) ?? 'N/A'}/10</div>
-                            </div> */}
-                            {/* <div>
-                              <div className="text-xs text-gray-500">Confianza</div>
-                              <div className="text-sm font-medium text-gray-900">{clause.analysis.confidence_score ? (clause.analysis.confidence_score * 100).toFixed(0) : 'N/A'}%</div>
-                            </div> */}
-                            {/* <div>
-                              <div className="text-xs text-gray-500">Riesgo</div>
-                              <div className="text-sm font-medium text-gray-900">{clause.analysis.is_high_risk ? 'Alto' : 'Normal'}</div>
-                            </div> */}
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -319,29 +267,6 @@ export default function AnalysisDetailPage() {
                     <h4 className="mb-2 text-sm font-medium text-gray-700">Análisis</h4>
                     <p className="text-gray-900">{selectedClause.analysis.outcome}</p>
                   </div>
-
-                  {/* <div className="grid grid-cols-3 gap-4">
-                    <div className="p-4 border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
-                      <div className="mb-1 text-sm text-gray-600">Favorabilidad</div>
-                      <div className="text-lg font-semibold text-gray-900">{selectedClause.analysis.favorability_rate?.toFixed(1) ?? 'N/A'}/10</div>
-                      <div className={`text-xs mt-1 px-2 py-1 rounded ${getFavorabilityClass(selectedClause.analysis.favorability_level)}`}>
-                        {selectedClause.analysis.favorability_level === 'very_favorable' ? 'Muy Favorable' :
-                         selectedClause.analysis.favorability_level === 'favorable' ? 'Favorable' :
-                         selectedClause.analysis.favorability_level === 'neutral' ? 'Neutral' :
-                         selectedClause.analysis.favorability_level === 'unfavorable' ? 'Desfavorable' :
-                         selectedClause.analysis.favorability_level === 'very_unfavorable' ? 'Muy Desfavorable' :
-                         selectedClause.analysis.favorability_level}
-                      </div>
-                    </div>
-                    <div className="p-4 border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
-                      <div className="mb-1 text-sm text-gray-600">Confianza</div>
-                      <div className="text-lg font-semibold text-gray-900">{selectedClause.analysis.confidence_score ? (selectedClause.analysis.confidence_score * 100).toFixed(0) : 'N/A'}%</div>
-                    </div>
-                    <div className="p-4 border-2 rounded-lg bg-gray-50" style={{ borderImage: 'linear-gradient(to right, #002D62, #ef4444) 1' }}>
-                      <div className="mb-1 text-sm text-gray-600">Riesgo</div>
-                      <div className="text-lg font-semibold text-gray-900">{selectedClause.analysis.is_high_risk ? 'Alto' : 'Normal'}</div>
-                    </div>
-                  </div> */}
 
                   {/* Divider */}
                   <div className="relative py-6">
@@ -416,20 +341,6 @@ export default function AnalysisDetailPage() {
                       </div>
                     </div>
                   )}
-
-                  {/* {selectedClause.analysis.legal_precedents && selectedClause.analysis.legal_precedents.length > 0 && (
-                    <div>
-                      <h4 className="mb-2 text-sm font-medium text-gray-700">Precedentes Legales</h4>
-                      <div className="space-y-3">
-                        {selectedClause.analysis.legal_precedents.map((precedent, idx) => (
-                          <div key={idx} className="p-3 rounded-lg bg-gray-50">
-                            <div className="font-medium text-gray-900">{precedent.case}</div>
-                            <div className="mt-1 text-sm text-gray-600">Relevancia: {precedent.relevance === 'high' ? 'Alta' : precedent.relevance === 'medium' ? 'Media' : precedent.relevance === 'low' ? 'Baja' : precedent.relevance}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )} */}
                 </>
               )}
             </div>

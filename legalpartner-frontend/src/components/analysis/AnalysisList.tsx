@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { listAnalyses } from '@/lib/api';
+import { formatDateTime } from '@/lib/utils';
 import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import type { ContractAnalysis, AnalysisState, ContractType } from '@/types';
 import { Filter, ChevronLeft, ChevronRight, FileText, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
@@ -30,24 +31,6 @@ function getStatusIcon(status: AnalysisState) {
     'failed': <XCircle className="w-4 h-4" />,
   };
   return icons[status] || <Clock className="w-4 h-4" />;
-}
-
-function getRiskBadgeClass(score?: number): string {
-  if (!score) return 'bg-gray-100 text-gray-700';
-  if (score <= 3) return 'bg-green-100 text-green-700';
-  if (score <= 6) return 'bg-yellow-100 text-yellow-700';
-  return 'bg-red-100 text-red-700';
-}
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
@@ -286,20 +269,6 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
                         {analysis.total_clauses || 0}
                       </span>
                     </div>
-                    <div>
-                      {/* <span className="text-gray-500">Marcadas:</span>
-                      <span className="ml-1 font-medium text-yellow-600">
-                        {analysis.flagged_clauses || 0}
-                      </span> */}
-                    </div>
-                    {analysis.risk_score !== undefined && analysis.risk_score !== null && (
-                      <div>
-                        {/* <span className="text-gray-500">Riesgo:</span> */}
-                        {/* <span className={`ml-1 px-2 py-0.5 rounded text-xs font-medium ${getRiskBadgeClass(analysis.risk_score)}`}>
-                          {analysis.risk_score.toFixed(1)}/10
-                        </span> */}
-                      </div>
-                    )}
                     {analysis.average_favorability !== undefined && analysis.average_favorability !== null && (
                       <div>
                         <span className="text-gray-500">Favorabilidad:</span>
@@ -311,10 +280,10 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
                   </div>
 
                   <div className="mt-2 text-xs text-gray-500">
-                    {formatDate(analysis.created_at)}
+                    {formatDateTime(analysis.created_at)}
                     {analysis.completed_at && (
                       <span className="ml-2">
-                        • Completado: {formatDate(analysis.completed_at)}
+                        • Completado: {formatDateTime(analysis.completed_at)}
                       </span>
                     )}
                   </div>

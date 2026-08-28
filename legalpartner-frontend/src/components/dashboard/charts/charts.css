@@ -1,26 +1,10 @@
 /* Estilos para las gráficas del dashboard */
 
-/* Colores para tipos de contratos en scatter plot */
-.contract-type-rent { background-color: #8884d8; }
-.contract-type-mortgage { background-color: #82ca9d; }
-.contract-type-services { background-color: #ffc658; }
-.contract-type-employment { background-color: #ff7300; }
-.contract-type-transfers { background-color: #8dd1e1; }
-.contract-type-default { background-color: #d084d0; }
-
-/* Colores para rangos de riesgo */
+/* Colores para rangos de riesgo (leyenda) */
 .risk-range-low { background-color: #10b981; }
 .risk-range-medium-low { background-color: #84cc16; }
 .risk-range-medium-high { background-color: #f59e0b; }
 .risk-range-high { background-color: #ef4444; }
-
-/* Clases helper para indicadores */
-.chart-legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-}
 
 .chart-legend-square {
   width: 12px;
