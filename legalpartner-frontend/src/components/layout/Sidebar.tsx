@@ -7,7 +7,7 @@ import { LayoutDashboard, FileText, BarChart3, UploadCloud, LogOut } from 'lucid
 export default function Sidebar() {
   const auth = useAuthStore()
   const router = useRouter()
-  if (!auth.isAuthenticated) return null
+  if (!auth.hasHydrated || !auth.isAuthenticated) return null
   return (
     <aside className='fixed top-0 left-0 flex-col hidden h-full text-white shadow-lg md:flex w-72 bg-gradient-to-b from-danger-600 via-danger-700 to-danger-800'>
       <div className='flex items-center gap-2 px-4 py-4 border-b border-white/20'>

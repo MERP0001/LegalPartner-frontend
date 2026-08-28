@@ -3,23 +3,15 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 
+/** Redirige a /auth/login si no hay sesión, una vez leído el estado persistido. */
 export default function Protected() {
-  const auth = useAuthStore()
+  const hasHydrated = useAuthStore((s) => s.hasHydrated)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const router = useRouter()
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    let hasToken = false
-    try {
-      const raw = localStorage.getItem('auth-storage')
-      if (raw) {
-        const parsed = JSON.parse(raw)
-        hasToken = !!parsed?.state?.token
-      }
-    } catch {}
-    const isAuth = auth.isAuthenticated || hasToken
-    if (!isAuth) {
+    if (hasHydrated && !isAuthenticated) {
       router.replace('/auth/login')
     }
-  }, [auth.isAuthenticated, router])
+  }, [hasHydrated, isAuthenticated, router])
   return null
 }

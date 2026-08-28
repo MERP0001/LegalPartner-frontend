@@ -124,12 +124,12 @@ export default function UploadPage() {
                 )}
                 <Button
                   type="submit"
-                  disabled={loading || !auth.isAuthenticated}
+                  disabled={loading || !auth.hasHydrated || !auth.isAuthenticated}
                   className="w-full text-white shadow-sm bg-primary-600 hover:bg-primary-700"
                 >
                   {loading ? "Subiendo..." : "Subir"}
                 </Button>
-                {!auth.isAuthenticated && (
+                {auth.hasHydrated && !auth.isAuthenticated && (
                   <div className="text-sm text-danger-600">Inicia sesión para subir documentos</div>
                 )}
               </form>

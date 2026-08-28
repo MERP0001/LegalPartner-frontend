@@ -28,7 +28,7 @@ export default function Home() {
               className='text-lg px-8 py-3 shadow-sm'
               onClick={() => router.push(auth.isAuthenticated ? '/upload' : '/auth/login')}
             >
-              {auth.isAuthenticated ? 'Comenzar Análisis' : 'Inicia sesión para comenzar análisis'}
+              {auth.hasHydrated && auth.isAuthenticated ? 'Comenzar Análisis' : 'Inicia sesión para comenzar análisis'}
             </Button>
           </div>
           </div>

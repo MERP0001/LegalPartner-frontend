@@ -9,7 +9,7 @@ export default function MobileSidebar() {
   const [open, setOpen] = useState(false)
   const auth = useAuthStore()
   const router = useRouter()
-  if (!auth.isAuthenticated) return null
+  if (!auth.hasHydrated || !auth.isAuthenticated) return null
 
   return (
     <div className='md:hidden'>

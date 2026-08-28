@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const fetchStats = useCallback(async () => {
+      if (!auth.hasHydrated) return;
       if (!auth.isAuthenticated) { setLoading(false); return; }
       setLoading(true);
       setError(null);
@@ -35,7 +36,7 @@ export default function DashboardPage() {
       } finally {
         setLoading(false);
       }
-  }, [auth.isAuthenticated]);
+  }, [auth.hasHydrated, auth.isAuthenticated]);
 
   useEffect(() => {
     fetchStats();
@@ -62,7 +63,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {!auth.isAuthenticated && (
+        {auth.hasHydrated && !auth.isAuthenticated && (
           <div className="mx-auto text-sm max-w-7xl text-danger-600">Inicia sesión para ver el dashboard.</div>
         )}
         {loading && (

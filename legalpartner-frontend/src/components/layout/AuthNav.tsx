@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/authStore'
 export default function AuthNav() {
   const auth = useAuthStore()
   const router = useRouter()
-  if (!auth.isAuthenticated) {
+  if (!auth.hasHydrated || !auth.isAuthenticated) {
     return (
       <div className='flex items-center gap-4'>
         <Link href='/auth/login' className='text-white/90 hover:text-white'>Login</Link>

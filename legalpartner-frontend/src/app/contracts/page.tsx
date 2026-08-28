@@ -25,6 +25,7 @@ export default function ContractsPage() {
   const pageSize = 10;
 
   const loadDocuments = useCallback(async () => {
+    if (!auth.hasHydrated) return;
     if (!auth.isAuthenticated) {
       setLoading(false);
       return;
@@ -62,7 +63,7 @@ export default function ContractsPage() {
     } finally {
       setLoading(false);
     }
-  }, [auth.isAuthenticated, currentPage]);
+  }, [auth.hasHydrated, auth.isAuthenticated, currentPage]);
 
   useEffect(() => {
     loadDocuments();
@@ -87,7 +88,7 @@ export default function ContractsPage() {
               </span>
             )}
           </div>
-          {!auth.isAuthenticated && (
+          {auth.hasHydrated && !auth.isAuthenticated && (
             <div className="mb-4 text-sm text-danger-600">Debes iniciar sesión para ver tus contratos.</div>
           )}
           {loading && (

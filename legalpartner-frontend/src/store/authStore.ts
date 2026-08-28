@@ -13,6 +13,9 @@ interface AuthState {
   refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  /** true cuando el estado persistido ya se leyó de localStorage (solo en cliente) */
+  hasHydrated: boolean;
+  setHasHydrated: (value: boolean) => void;
   login: (tokens: AuthTokens, user: User) => void;
   setTokens: (tokens: AuthTokens) => void;
   logout: () => void;
@@ -28,6 +31,8 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: null,
         isAuthenticated: false,
         isLoading: false,
+        hasHydrated: false,
+        setHasHydrated: (value) => set({ hasHydrated: value }),
         login: (tokens, user) =>
           set({
             token: tokens.access,
@@ -51,6 +56,9 @@ export const useAuthStore = create<AuthState>()(
       }),
       {
         name: 'auth-storage',
+        // El primer render en cliente coincide con el del servidor (sin sesión);
+        // los componentes esperan a hasHydrated antes de mostrar estado de sesión.
+        onRehydrateStorage: () => (state) => state?.setHasHydrated(true),
         partialize: (state) => ({
           token: state.token,
           refreshToken: state.refreshToken,
