@@ -21,7 +21,8 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  // 30 s por defecto; las llamadas largas (subida, chatbot) lo anulan explícitamente.
+  timeout: 30000,
 });
 
 apiClient.interceptors.request.use(
@@ -112,7 +113,7 @@ export type RegisterResponse = {
   requires_verification?: boolean;
   user?: User;
   tokens?: { refresh: string; access: string };
-  errors?: Record<string, unknown> | string;
+  errors?: unknown;
 };
 
 export async function apiRegister(data: {
@@ -143,6 +144,8 @@ export async function uploadDocument(
   if (metadata) form.append('metadata', JSON.stringify(metadata));
   const res = await apiClient.post('/api/documents/upload/', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    // La subida de un PDF grande puede superar el timeout global.
+    timeout: 0,
   });
   return res.data as { success: boolean; data?: Document; is_duplicate?: boolean; message?: string; error?: string };
 }
@@ -182,18 +185,7 @@ export async function listAnalyses(params?: Record<string, unknown>): Promise<An
 
 export async function getAnalysis(id: string): Promise<ApiResponse<ContractAnalysis>> {
   const res = await apiClient.get(`/api/contracts/analysis/${id}/`);
-  const responseData = res.data;
-  
-  // Si la respuesta ya tiene la estructura {success, data}, la devolvemos tal cual
-  if (responseData.success !== undefined && responseData.data !== undefined) {
-    return responseData as ApiResponse<ContractAnalysis>;
-  }
-  
-  // Si la respuesta es directamente el objeto de análisis, lo envolvemos
-  return {
-    success: true,
-    data: responseData as ContractAnalysis,
-  } as ApiResponse<ContractAnalysis>;
+  return res.data as ApiResponse<ContractAnalysis>;
 }
 
 // Devuelve data undefined cuando el documento aún no tiene análisis (404) o falla la petición.
@@ -202,18 +194,7 @@ export type LatestAnalysisResponse = { success: boolean; data?: ContractAnalysis
 export async function getLatestDocumentAnalysis(documentId: string): Promise<LatestAnalysisResponse> {
   try {
     const res = await apiClient.get(`/api/contracts/analysis/document/${documentId}/latest/`);
-    const responseData = res.data;
-    
-    // Si la respuesta ya tiene la estructura {success, data}, la devolvemos tal cual
-    if (responseData.success !== undefined && responseData.data !== undefined) {
-      return responseData as ApiResponse<ContractAnalysis>;
-    }
-    
-    // Si la respuesta es directamente el objeto de análisis, lo envolvemos
-    return {
-      success: true,
-      data: responseData as ContractAnalysis,
-    } as ApiResponse<ContractAnalysis>;
+    return res.data as LatestAnalysisResponse;
   } catch (error: unknown) {
     // Si no hay análisis (404) o cualquier otro error, devolvemos success: false
     // Esto no es un error crítico, simplemente no hay análisis disponible

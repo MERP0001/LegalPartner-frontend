@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { listDocuments, startAnalysis } from '@/lib/api';
+import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import { Button } from '@/components/common/Button';
 import type { Document, ContractType } from '@/types';
 import { FileText, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
@@ -81,14 +82,12 @@ export default function StartAnalysisForm({
         }
         setLoading(false);
       } else {
-        const errorMsg = res.error || res.message || 'No se pudo iniciar el análisis';
-        setError(errorMsg);
+        setError(getErrorMessage(res, 'No se pudo iniciar el análisis'));
         setLoading(false);
       }
     } catch (err) {
-      console.error('Error starting analysis:', err);
-      const errorMsg = 'Error al conectar con el servidor';
-      setError(errorMsg);
+      // Incluye los 403 de límite mensual, que el usuario debe ver tal cual.
+      setError(getApiErrorMessage(err, 'Error al conectar con el servidor'));
       setLoading(false);
     }
   };

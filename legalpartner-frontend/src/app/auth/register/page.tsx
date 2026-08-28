@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { apiRegister } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/common/Button";
 import { Shield } from "lucide-react";
@@ -39,8 +40,7 @@ export default function RegisterPage() {
         organization: organization || undefined,
       });
       if (!res.success) {
-        const friendly = typeof res.errors === 'string' ? res.errors : (res.message || "No se pudo crear la cuenta");
-        setError(String(friendly));
+        setError(getErrorMessage(res, "No se pudo crear la cuenta"));
         setLoading(false);
         return;
       }
@@ -61,14 +61,7 @@ export default function RegisterPage() {
         }, 1200);
       }
     } catch (err: unknown) {
-      const anyErr = err as { response?: { data?: unknown } };
-      const data = anyErr?.response?.data;
-      let msg = "Error de servidor";
-      if (typeof data === "string") msg = data;
-      else if (data && typeof (data as { message?: string }).message === "string") {
-        msg = (data as { message?: string }).message as string;
-      }
-      setError(msg);
+      setError(getApiErrorMessage(err, "No se pudo crear la cuenta"));
     } finally {
       setLoading(false);
     }

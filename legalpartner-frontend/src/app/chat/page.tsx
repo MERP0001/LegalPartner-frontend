@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { chatbotAsk } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { ConsultationResponseData } from "@/types";
 import { Button } from "@/components/common/Button";
 
@@ -38,11 +39,11 @@ export default function ChatbotPage() {
         const assistant: ChatMsg = { role: 'assistant', content: d.response, meta: d };
         setMessages(prev => [...prev.slice(0, -1), assistant]);
       } else {
-        setError(res.message || 'No se pudo procesar la consulta');
+        setError(getErrorMessage(res, 'No se pudo procesar la consulta'));
         setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: 'No pude procesar la consulta.' }]);
       }
-    } catch {
-      setError('Error al contactar el chatbot');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Error al contactar el chatbot'));
       setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: 'Ocurrió un error.' }]);
     } finally {
       setLoading(false);

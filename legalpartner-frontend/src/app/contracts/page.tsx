@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { listDocuments } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { Document } from "@/types";
 import { useAuthStore } from "@/store/authStore";
 import DocumentCard from "@/components/documents/DocumentCard";
@@ -48,14 +49,14 @@ export default function ContractsPage() {
         setTotalCount(0);
         setHasNext(false);
         setHasPrevious(false);
-        setError(res.message || "No se pudieron cargar los documentos");
+        setError(getErrorMessage(res, "No se pudieron cargar los documentos"));
       }
-    } catch {
+    } catch (err) {
       setDocs([]);
       setTotalCount(0);
       setHasNext(false);
       setHasPrevious(false);
-      setError("Error al cargar documentos");
+      setError(getApiErrorMessage(err, "Error al cargar documentos"));
     } finally {
       setLoading(false);
     }

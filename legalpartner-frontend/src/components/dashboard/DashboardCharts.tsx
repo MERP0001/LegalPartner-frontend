@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { listAnalyses } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { ContractAnalysis } from "@/types";
 import { RiskFavorabilityScatter, RiskDistributionChart } from "@/components/dashboard/charts";
 import AnalysisDebugger from "./AnalysisDebugger";
@@ -28,11 +29,10 @@ export default function DashboardCharts({ className }: DashboardChartsProps) {
         if (response.success && response.data) {
           setAnalyses(response.data);
         } else {
-          setError(response.message || "Error al cargar análisis");
+          setError(getErrorMessage(response, "Error al cargar análisis"));
         }
       } catch (err) {
-        console.error("Error fetching analyses:", err);
-        setError("Error de conexión");
+        setError(getApiErrorMessage(err, "Error de conexión"));
       } finally {
         setLoading(false);
       }

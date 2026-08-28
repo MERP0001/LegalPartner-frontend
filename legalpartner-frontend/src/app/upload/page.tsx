@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { uploadDocument } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/store/authStore";
 import Protected from "@/components/layout/Protected";
@@ -40,17 +41,10 @@ export default function UploadPage() {
         setFile(null);
         setType("");
       } else {
-        setStatus(res?.error || "No se pudo subir el documento");
+        setStatus(getErrorMessage(res, "No se pudo subir el documento"));
       }
     } catch (err: unknown) {
-      const anyErr = err as { response?: { data?: unknown } };
-      const data = anyErr?.response?.data;
-      let msg = "Error de servidor";
-      if (typeof data === "string") msg = data;
-      else if (data && typeof (data as { error?: string }).error === "string") {
-        msg = (data as { error?: string }).error as string;
-      }
-      setStatus(msg);
+      setStatus(getApiErrorMessage(err, "No se pudo subir el documento"));
     } finally {
       setLoading(false);
     }

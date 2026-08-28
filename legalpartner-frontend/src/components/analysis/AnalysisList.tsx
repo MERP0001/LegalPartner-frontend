@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
 import { listAnalyses } from '@/lib/api';
+import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import type { ContractAnalysis, AnalysisState, ContractType } from '@/types';
 import { Filter, ChevronLeft, ChevronRight, FileText, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
 
@@ -91,15 +92,14 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
         setTotalCount(0);
         setHasNext(false);
         setHasPrevious(false);
-        setError(res.message || 'No se pudieron cargar los análisis');
+        setError(getErrorMessage(res, 'No se pudieron cargar los análisis'));
       }
     } catch (err) {
-      console.error('Error loading analyses:', err);
       setAnalyses([]);
       setTotalCount(0);
       setHasNext(false);
       setHasPrevious(false);
-      setError('Error al conectar con el servidor');
+      setError(getApiErrorMessage(err, 'Error al conectar con el servidor'));
     } finally {
       setLoading(false);
     }

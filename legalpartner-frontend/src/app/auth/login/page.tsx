@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { apiLogin } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/common/Button";
 import { Shield } from "lucide-react";
@@ -26,7 +27,7 @@ export default function LoginPage() {
     try {
       const res = await apiLogin(email, password);
       if (!res.success) {
-        setError(res.message || "Credenciales inválidas");
+        setError(getErrorMessage(res, "Credenciales inválidas"));
         setLoading(false);
         return;
       }
@@ -42,14 +43,7 @@ export default function LoginPage() {
         setError("Respuesta de login inválida");
       }
     } catch (err: unknown) {
-      const anyErr = err as { response?: { data?: unknown } };
-      const data = anyErr?.response?.data;
-      let msg = "Error de servidor";
-      if (typeof data === "string") msg = data;
-      else if (data && typeof (data as { message?: string }).message === "string") {
-        msg = (data as { message?: string }).message as string;
-      }
-      setError(msg);
+      setError(getApiErrorMessage(err, "Credenciales inválidas"));
     } finally {
       setLoading(false);
     }

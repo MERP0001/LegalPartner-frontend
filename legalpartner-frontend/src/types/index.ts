@@ -160,6 +160,8 @@ export interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string;
+  error?: unknown;
+  errors?: unknown;
 }
 
 export interface PaginatedResponse<T> {
@@ -176,6 +178,8 @@ export interface PaginatedResponse<T> {
     previous_page: number | null;
   };
   message?: string;
+  error?: unknown;
+  errors?: unknown;
 }
 
 export interface AnalysisListResponse {
@@ -192,6 +196,8 @@ export interface AnalysisListResponse {
     previous_page: number | null;
   };
   message?: string;
+  error?: unknown;
+  errors?: unknown;
 }
 
 export interface DocumentStats {

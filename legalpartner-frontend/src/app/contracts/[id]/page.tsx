@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getDocument, getDocumentDownloadUrl, startAnalysis, getLatestDocumentAnalysis } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { Document, ContractAnalysis } from "@/types";
 import { Button } from "@/components/common/Button";
 
@@ -31,10 +32,10 @@ export default function ContractDetailPage() {
             setAnalysis(null);
           }
         } else {
-          setError(res.message || 'Error al cargar documento');
+          setError(getErrorMessage(res, 'Error al cargar documento'));
         }
-      } catch {
-        setError('Error al cargar documento');
+      } catch (err) {
+        setError(getApiErrorMessage(err, 'Error al cargar documento'));
       } finally {
         setLoading(false);
       }
@@ -50,12 +51,11 @@ export default function ContractDetailPage() {
       if (res?.success && res.data?.analysis_id) {
         setActionMsg(res.message || "Análisis iniciado");
       } else {
-        const errorMsg = res?.error || "No se pudo iniciar el análisis";
-        setActionMsg(errorMsg);
+        setActionMsg(getErrorMessage(res, "No se pudo iniciar el análisis"));
       }
-    } catch {
-      const errorMsg = "Error al iniciar análisis";
-      setActionMsg(errorMsg);
+    } catch (err) {
+      // Incluye los 403 de límite mensual, que el usuario debe ver tal cual.
+      setActionMsg(getApiErrorMessage(err, "Error al iniciar análisis"));
     } finally {
       setIsAnalyzing(false);
     }

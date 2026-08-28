@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getStats } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { DocumentStats } from "@/types";
 import DocumentCard from "@/components/documents/DocumentCard";
 import { FileText, Settings, CheckCircle2 } from "lucide-react";
@@ -24,10 +25,10 @@ export default function DashboardPage() {
         if (res.success && res.data) {
           setStats(res.data);
         } else {
-          setError(res.message || "No se pudieron cargar las estadísticas");
+          setError(getErrorMessage(res, "No se pudieron cargar las estadísticas"));
         }
-      } catch {
-        setError("Error al cargar estadísticas");
+      } catch (err) {
+        setError(getApiErrorMessage(err, "Error al cargar estadísticas"));
       } finally {
         setLoading(false);
       }

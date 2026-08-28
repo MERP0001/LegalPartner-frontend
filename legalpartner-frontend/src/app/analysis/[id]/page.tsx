@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getAnalysis } from "@/lib/api";
+import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import type { ContractAnalysis, ContractClause } from "@/types";
 import Protected from "@/components/layout/Protected";
 import { ArrowLeft, FileText, Loader2, XCircle, AlertCircle } from "lucide-react";
@@ -49,25 +50,13 @@ export default function AnalysisDetailPage() {
     const load = async () => {
       try {
         const res = await getAnalysis(id);
-        console.log('Analysis response:', res);
-        console.log('Response success:', res.success);
-        console.log('Response data:', res.data);
-        
-        // Intentar manejar diferentes estructuras de respuesta
         if (res.success && res.data) {
-          console.log('Analysis data:', res.data);
-          setData(res.data);
-        } else if (res.data && !res.success) {
-          // Caso donde hay data pero success es false o undefined
-          console.log('Data exists but success is false, using data anyway:', res.data);
           setData(res.data);
         } else {
-          console.log('Error or no data:', res);
-          setError(res.message || 'No se pudo cargar el análisis');
+          setError(getErrorMessage(res, 'No se pudo cargar el análisis'));
         }
       } catch (err) {
-        console.error('Error loading analysis:', err);
-        setError('Error al cargar el análisis');
+        setError(getApiErrorMessage(err, 'Error al cargar el análisis'));
       } finally {
         setLoading(false);
       }
