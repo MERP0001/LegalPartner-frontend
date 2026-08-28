@@ -42,6 +42,7 @@ const AUTH_PATHS = [
   '/api/auth/register/',
   '/api/auth/token/refresh/',
   '/api/auth/verify-email/',
+  '/api/auth/resend-verification/',
 ];
 
 // Una única renovación en vuelo aunque varias peticiones reciban 401 a la vez.
@@ -126,6 +127,16 @@ export async function apiRegister(data: {
 }): Promise<RegisterResponse> {
   const res = await apiClient.post('/api/auth/register/', data);
   return res.data as RegisterResponse;
+}
+
+export async function apiVerifyEmail(key: string): Promise<{ success: boolean; message?: string; email?: string }> {
+  const res = await apiClient.post('/api/auth/verify-email/', { key });
+  return res.data;
+}
+
+export async function apiResendVerification(email: string): Promise<{ success: boolean; message?: string }> {
+  const res = await apiClient.post('/api/auth/resend-verification/', { email });
+  return res.data;
 }
 
 export async function listDocuments(params?: Record<string, unknown>): Promise<PaginatedResponse<Document>> {

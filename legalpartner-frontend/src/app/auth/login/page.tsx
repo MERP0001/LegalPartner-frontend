@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { apiLogin } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
+import { apiLogin, apiResendVerification } from "@/lib/api";
+import { getApiErrorData, getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/common/Button";
 import { Shield } from "lucide-react";
@@ -12,6 +12,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // Email pendiente de verificar (el backend responde 403 con requires_verification)
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [resendMsg, setResendMsg] = useState<string | null>(null);
   const auth = useAuthStore();
 
   useEffect(() => {
@@ -23,6 +26,8 @@ export default function LoginPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setPendingEmail(null);
+    setResendMsg(null);
     setLoading(true);
     try {
       const res = await apiLogin(email, password);
@@ -32,7 +37,8 @@ export default function LoginPage() {
         return;
       }
       if (res.requires_verification) {
-        setError("Verifica tu email antes de iniciar sesión");
+        setPendingEmail(res.email || email);
+        setError(getErrorMessage(res, "Verifica tu email antes de iniciar sesión"));
         setLoading(false);
         return;
       }
@@ -43,9 +49,25 @@ export default function LoginPage() {
         setError("Respuesta de login inválida");
       }
     } catch (err: unknown) {
+      // El 403 de "email sin verificar" llega como excepción de axios
+      const data = getApiErrorData(err);
+      if (data?.requires_verification) {
+        setPendingEmail(data.email || email);
+      }
       setError(getApiErrorMessage(err, "Credenciales inválidas"));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onResend = async () => {
+    if (!pendingEmail) return;
+    setResendMsg(null);
+    try {
+      const res = await apiResendVerification(pendingEmail);
+      setResendMsg(res.message || "Correo de verificación reenviado.");
+    } catch (err) {
+      setResendMsg(getApiErrorMessage(err, "No se pudo reenviar el correo"));
     }
   };
 
@@ -84,6 +106,14 @@ export default function LoginPage() {
               </div>
               {error && (
                 <div className="text-danger-600 text-sm">{String(error)}</div>
+              )}
+              {pendingEmail && (
+                <div className="text-sm">
+                  <button type="button" onClick={onResend} className="text-primary-600 underline">
+                    Reenviar correo de verificación a {pendingEmail}
+                  </button>
+                  {resendMsg && <div className="mt-1 text-gray-600">{resendMsg}</div>}
+                </div>
               )}
             <Button
               type="submit"
