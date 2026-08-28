@@ -67,8 +67,9 @@ Copia `.env.example` a `.env.local` y configura las variables:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
-NEXT_PUBLIC_WS_URL=ws://localhost:8000
 ```
+
+En producción la variable es obligatoria: `next build` falla si no está definida.
 
 ## 🏃‍♂️ Inicio Rápido
 

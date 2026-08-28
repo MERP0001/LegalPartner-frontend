@@ -13,6 +13,7 @@ import type {
   PaginatedResponse
 } from '@/types';
 
+// En producción next.config.ts exige la variable; el fallback solo aplica en desarrollo.
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
 const apiClient = axios.create({
