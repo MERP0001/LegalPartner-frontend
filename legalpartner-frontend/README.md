@@ -21,6 +21,8 @@ Frontend de la aplicación LegalPartner - Plataforma de análisis inteligente de
 
 - **ESLint** para linting
 - **Prettier** para formateo de código
+- **Vitest** para tests unitarios
+- **GitHub Actions** (`.github/workflows/ci.yml`) ejecuta type-check, lint, format, tests y build
 - **PostCSS + Autoprefixer** para compatibilidad CSS
 
 ## 📁 Estructura del Proyecto
@@ -70,6 +72,10 @@ npm run lint:fix     # Ejecutar ESLint con fix automático
 npm run format       # Formatear código con Prettier
 npm run format:check # Verificar formato
 npm run type-check   # Verificar tipos TypeScript
+
+# Tests
+npm test             # Ejecutar tests (vitest)
+npm run test:watch   # Tests en modo watch
 ```
 
 ## ⚙️ Configuración de Entorno
