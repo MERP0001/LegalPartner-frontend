@@ -164,7 +164,7 @@ export default function DashboardPage() {
                       : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
-                  📄 Documentos Recientes
+                  <span aria-hidden="true">📄</span> Documentos Recientes
                 </button>
                 <button
                   onClick={() => setActiveTab("analytics")}
@@ -174,7 +174,7 @@ export default function DashboardPage() {
                       : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
-                  📊 Gráficas
+                  <span aria-hidden="true">📊</span> Gráficas
                 </button>
               </div>
 
@@ -189,7 +189,11 @@ export default function DashboardPage() {
                       {stats.recent_uploads.map((d, index) => (
                         <div 
                           key={d.document_id} 
+                          role="link"
+                          tabIndex={0}
+                          aria-label={`Ver contrato ${d.original_filename}`}
                           onClick={() => router.push(`/contracts/${d.document_id}`)} 
+                          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.click(); } }}
                           className={`cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl border-2 rounded-lg p-3 ${
                             index % 2 === 0 
                               ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50' 

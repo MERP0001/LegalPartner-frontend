@@ -95,8 +95,8 @@ export default function AnalysisDetailPage() {
           </button>
 
           <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-3">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex items-start gap-3 min-w-0">
                 <FileText className="w-6 h-6 mt-1 text-primary-600" />
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">
@@ -190,7 +190,11 @@ export default function AnalysisDetailPage() {
                             ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50' 
                             : 'border-danger-500 hover:border-danger-600 hover:bg-red-50'
                         }`}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Ver detalle de la cláusula ${index + 1}`}
                         onClick={() => setSelectedClause(clause)}
+                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.click(); } }}
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">

@@ -76,8 +76,9 @@ export default function RegisterPage() {
             <p className="text-sm text-gray-600 mb-6">Regístrate para comenzar</p>
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Nombre</label>
+                <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Nombre</label>
                 <input
+                  id="first-name"
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
@@ -86,8 +87,9 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Apellido</label>
+                <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">Apellido</label>
                 <input
+                  id="last-name"
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
@@ -96,9 +98,11 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                 <input
+                  id="email"
                   type="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="mt-1 w-full rounded-md bg-white/90 ring-1 ring-gray-200 focus:border-primary-600 focus:ring-primary-600"
@@ -106,9 +110,11 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Contraseña</label>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">Contraseña</label>
                 <input
+                  id="password"
                   type="password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="mt-1 w-full rounded-md bg-white/90 ring-1 ring-gray-200 focus:border-primary-600 focus:ring-primary-600"
@@ -116,9 +122,11 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
+                <label htmlFor="password-confirm" className="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
                 <input
+                  id="password-confirm"
                   type="password"
+                  autoComplete="new-password"
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
                   className="mt-1 w-full rounded-md bg-white/90 ring-1 ring-gray-200 focus:border-primary-600 focus:ring-primary-600"
@@ -126,8 +134,9 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Organización (opcional)</label>
+                <label htmlFor="organization" className="block text-sm font-medium text-gray-700">Organización (opcional)</label>
                 <input
+                  id="organization"
                   type="text"
                   value={organization}
                   onChange={(e) => setOrganization(e.target.value)}

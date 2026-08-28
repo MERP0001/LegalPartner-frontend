@@ -166,7 +166,7 @@ export default function RiskDistributionChart({ analyses }: RiskDistributionChar
       </div>
 
       {/* Estadísticas resumidas */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-3">
         <div className="text-center p-3 bg-gray-50 rounded-lg">
           <div className="text-2xl font-bold text-gray-900">
             {averageRisk.toFixed(1)}

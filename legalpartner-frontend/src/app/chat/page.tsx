@@ -75,6 +75,7 @@ export default function ChatbotPage() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                aria-label="Pregunta legal"
                 placeholder="Escribe tu pregunta legal..."
                 className="flex-1 rounded-md bg-white/90 ring-1 ring-gray-200 focus:border-primary-600 focus:ring-primary-600"
               />

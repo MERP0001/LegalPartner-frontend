@@ -22,7 +22,8 @@ export default function ChatbotWidget() {
     <>
       <button
         onClick={() => setOpen(o => !o)}
-        aria-label="Abrir chatbot"
+        aria-label={open ? "Cerrar chatbot" : "Abrir chatbot"}
+        aria-expanded={open}
         className="fixed bottom-6 right-6 z-50 h-12 w-12 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 text-white shadow-xl ring-2 ring-primary-300/50 flex items-center justify-center hover:brightness-105"
       >
         <MessageCircle className="h-6 w-6" />
@@ -99,6 +100,7 @@ export default function ChatbotWidget() {
               <input
                 value={input}
                 onChange={e => setInput(e.target.value)}
+                aria-label="Consulta legal"
                 placeholder="Escribe tu consulta…"
                 className="flex-1 rounded-md border px-3 py-2 text-sm bg-white/90 ring-1 ring-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-600"
               />

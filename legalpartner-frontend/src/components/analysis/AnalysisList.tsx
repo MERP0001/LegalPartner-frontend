@@ -238,7 +238,10 @@ export default function AnalysisList({ onAnalysisClick }: AnalysisListProps) {
           {analyses.map((analysis, index) => (
             <div
               key={analysis.analysis_id}
+              role="link"
+              tabIndex={0}
               onClick={() => handleAnalysisClick(analysis.analysis_id)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.click(); } }}
               className={`p-4 transition-all duration-300 ease-in-out border-2 rounded-lg cursor-pointer transform hover:scale-105 hover:shadow-xl group ${
                 index % 2 === 0 
                   ? 'border-primary-600 hover:border-primary-700 hover:bg-primary-50' 

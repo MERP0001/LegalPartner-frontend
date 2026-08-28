@@ -91,7 +91,7 @@ export default function RiskFavorabilityScatter({
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Distribución por Nivel de Riesgo
         </h3>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {/* Riesgo Bajo */}
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="text-center">
@@ -132,7 +132,7 @@ export default function RiskFavorabilityScatter({
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Resumen de Favorabilidad
         </h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Favorables */}
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="text-center">
