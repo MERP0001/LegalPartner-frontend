@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { listAnalyses } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
+import { listAnalyses, getApiErrorMessage, getErrorMessage } from "@/lib/api";
 import type { ContractAnalysis } from "@/types";
 import { isAnalysisCompleted } from "@/lib/labels";
 import { RiskFavorabilityScatter, RiskDistributionChart } from "@/components/dashboard/charts";

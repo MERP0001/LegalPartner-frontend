@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Shield, Loader2 } from "lucide-react";
-import { apiVerifyEmail } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
+import { apiVerifyEmail, getApiErrorMessage, getErrorMessage } from "@/lib/api";
 
 type Status = "verifying" | "ok" | "error";
 

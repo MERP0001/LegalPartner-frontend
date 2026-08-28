@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { askChatbotAndWait } from '@/lib/api';
-import { getApiErrorMessage } from '@/lib/apiError';
+import { askChatbotAndWait, getApiErrorMessage } from '@/lib/api';
 import type { ConsultationResponseData } from '@/types';
 
 export type ChatMsg = {

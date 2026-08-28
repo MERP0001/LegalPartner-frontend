@@ -1,8 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { listDocuments, startAnalysis, getAnalysisProgress, type AnalysisProgressData } from '@/lib/api';
-import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
+import { listDocuments, startAnalysis, getAnalysisProgress, type AnalysisProgressData, getApiErrorMessage, getErrorMessage } from '@/lib/api';
 import { Button } from '@/components/common/Button';
 import type { Document, ContractType } from '@/types';
 import { FileText, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';

@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getDocument, startAnalysis, getLatestDocumentAnalysis } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
+import { getDocument, startAnalysis, getLatestDocumentAnalysis, getApiErrorMessage, getErrorMessage } from "@/lib/api";
 import type { Document, ContractAnalysis } from "@/types";
 import { Button } from "@/components/common/Button";
 import Protected from "@/components/layout/Protected";

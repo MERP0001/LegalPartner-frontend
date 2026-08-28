@@ -1,9 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { listAnalyses } from '@/lib/api';
+import { listAnalyses, getApiErrorMessage, getErrorMessage } from '@/lib/api';
 import { formatDateTime } from '@/lib/utils';
-import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
 import type { ContractAnalysis, AnalysisState, ContractType } from '@/types';
 import { ANALYSIS_STATE_LABELS, CONTRACT_TYPE_OPTIONS, getAnalysisStateLabel, getContractTypeLabel, isAnalysisInProgress } from '@/lib/labels';
 import { Filter, FileText, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';

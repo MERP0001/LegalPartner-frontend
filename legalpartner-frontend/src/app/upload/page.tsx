@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { uploadDocument, getOcrStatus } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
+import { uploadDocument, getOcrStatus, getApiErrorMessage, getErrorMessage } from "@/lib/api";
 import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/store/authStore";
 import Protected from "@/components/layout/Protected";

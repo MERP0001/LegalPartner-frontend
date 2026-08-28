@@ -25,22 +25,31 @@ Frontend de la aplicación LegalPartner - Plataforma de análisis inteligente de
 
 ```
 src/
-├── app/                    # App Router de Next.js
-│   ├── globals.css        # Estilos globales con Tailwind
-│   ├── layout.tsx         # Layout raíz
-│   └── page.tsx           # Página de inicio
+├── app/                    # App Router de Next.js (una carpeta por ruta)
+│   ├── auth/              # login, register, confirm-email/[key]
+│   ├── analysis/          # lista y detalle de análisis
+│   ├── contracts/         # lista y detalle de documentos
+│   ├── chat/ dashboard/ upload/
+│   ├── globals.css        # Tailwind + clases compartidas (.container, .card-premium, .lp-gradient-border)
+│   └── layout.tsx         # Layout raíz (sidebar, cabecera móvil, chatbot flotante)
 ├── components/
-│   ├── layout/            # Componentes de layout (Navbar, Footer)
-│   ├── common/            # Componentes reutilizables (Button, Card, etc.)
-│   └── auth/              # Componentes de autenticación
+│   ├── analysis/          # AnalysisList, StartAnalysisForm, ClauseDetailModal
+│   ├── chat/              # ChatbotWidget (flotante)
+│   ├── common/            # Button, Pagination, FavorabilityBadge
+│   ├── dashboard/         # DashboardCharts y charts/
+│   ├── documents/         # DocumentCard
+│   └── layout/            # Sidebar, MobileSidebar, AuthNav, Protected, navItems
+├── hooks/                 # useChatbot, useAnalysisPolling, useAnalysisStats, useLogout
 ├── lib/
-│   ├── api.ts             # Cliente Axios configurado
-│   └── utils.ts           # Utilidades y helpers
+│   ├── api/               # Cliente axios (client.ts) y llamadas por dominio:
+│   │                      #   auth, documents, analysis, consultations, errors
+│   ├── labels.ts          # Etiquetas de tipos de contrato, estados y favorabilidad
+│   ├── favorabilityDefinitions.ts
+│   └── utils.ts           # cn, formatDateTime
 ├── store/
-│   └── authStore.ts       # Store de Zustand para auth
-├── types/
-│   └── index.ts           # Tipos TypeScript globales
-└── hooks/                 # Hooks personalizados
+│   └── authStore.ts       # Sesión (tokens JWT + usuario) persistida en localStorage
+└── types/
+    └── index.ts           # Tipos de los contratos de la API
 ```
 
 ## 🛠️ Comandos Disponibles

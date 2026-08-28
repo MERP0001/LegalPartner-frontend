@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { apiRegister } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
+import { apiRegister, getApiErrorMessage, getErrorMessage } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/common/Button";
 import { Shield } from "lucide-react";

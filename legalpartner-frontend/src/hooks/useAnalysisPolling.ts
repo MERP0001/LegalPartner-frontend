@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { getAnalysis } from '@/lib/api';
-import { getApiErrorMessage, getErrorMessage } from '@/lib/apiError';
+import { getAnalysis, getApiErrorMessage, getErrorMessage } from '@/lib/api';
 import type { ContractAnalysis } from '@/types';
 import { isAnalysisCompleted, isAnalysisFailed, isAnalysisInProgress } from '@/lib/labels';
 
