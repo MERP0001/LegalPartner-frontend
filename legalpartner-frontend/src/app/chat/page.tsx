@@ -1,11 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { chatbotAsk } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
-import type { ConsultationResponseData } from "@/types";
+import { useEffect, useRef } from "react";
+import { useChatbot } from "@/hooks/useChatbot";
 import { Button } from "@/components/common/Button";
-
-type ChatMsg = { role: 'user' | 'assistant'; content: string; meta?: Partial<ConsultationResponseData> };
 
 const SUGGESTIONS = [
   "¿Qué cláusulas revisar en un contrato de alquiler?",
@@ -15,41 +11,12 @@ const SUGGESTIONS = [
 ];
 
 export default function ChatbotPage() {
-  const [messages, setMessages] = useState<ChatMsg[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { messages, input, setInput, loading, error, send } = useChatbot();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages.length]);
-
-  const send = async (q: string) => {
-    if (!q || q.trim().length < 5) return;
-    setError(null);
-    setInput("");
-    const userMsg: ChatMsg = { role: 'user', content: q };
-    setMessages(prev => [...prev, userMsg, { role: 'assistant', content: 'Escribiendo…' }]);
-    setLoading(true);
-    try {
-      const res = await chatbotAsk(q);
-      if (res.success) {
-        const d = res.data;
-        const assistant: ChatMsg = { role: 'assistant', content: d.response, meta: d };
-        setMessages(prev => [...prev.slice(0, -1), assistant]);
-      } else {
-        setError(getErrorMessage(res, 'No se pudo procesar la consulta'));
-        setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: 'No pude procesar la consulta.' }]);
-      }
-    } catch (err) {
-      setError(getApiErrorMessage(err, 'Error al contactar el chatbot'));
-      setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: 'Ocurrió un error.' }]);
-    } finally {
-      setLoading(false);
-      setInput("");
-    }
-  };
 
   return (
     <div className="min-h-screen">

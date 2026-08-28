@@ -1,11 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { chatbotAsk } from "@/lib/api";
-import { getApiErrorMessage, getErrorMessage } from "@/lib/apiError";
-import type { ConsultationResponseData } from "@/types";
+import { useChatbot } from "@/hooks/useChatbot";
 import { MessageCircle, X, Loader2, Send } from "lucide-react";
-
-type ChatMsg = { role: "user" | "assistant"; content: string; meta?: Partial<ConsultationResponseData> };
 
 const SUGGESTIONS = [
   "Cláusulas clave en contratos de alquiler",
@@ -15,40 +11,8 @@ const SUGGESTIONS = [
 
 export default function ChatbotWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMsg[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { messages, input, setInput, loading, error, send } = useChatbot();
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const send = async (q: string) => {
-    if (!q || q.trim().length < 3) return;
-    // Evitar envíos concurrentes mientras hay una petición en curso
-    if (loading) return;
-    setError(null);
-    setInput("");
-    // Marcar loading lo antes posible para prevenir race conditions
-    setLoading(true);
-    const userMsg: ChatMsg = { role: "user", content: q };
-    setMessages(prev => [...prev, userMsg, { role: "assistant", content: "Escribiendo…" }]);
-    try {
-      const res = await chatbotAsk(q);
-      if (res.success) {
-        const d = res.data;
-        const assistant: ChatMsg = { role: "assistant", content: d.response, meta: d };
-        setMessages(prev => [...prev.slice(0, -1), assistant]);
-      } else {
-        setError(getErrorMessage(res, "No se pudo procesar la consulta"));
-        setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: "No pude procesar la consulta." }]);
-      }
-    } catch (err) {
-      setError(getApiErrorMessage(err, "Error al contactar el chatbot"));
-      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: "Ocurrió un error." }]);
-    } finally {
-      setLoading(false);
-      setInput("");
-    }
-  };
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
